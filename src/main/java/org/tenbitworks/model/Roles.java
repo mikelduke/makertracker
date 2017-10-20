@@ -1,6 +1,6 @@
 package org.tenbitworks.model;
 
-public enum Roles { //TODO Creates roles drop down on users page
+public enum Roles {
 	USER("User"),
 	ADMIN("Admin"),
 	API("Api");
