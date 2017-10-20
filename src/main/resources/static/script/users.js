@@ -95,7 +95,7 @@ $(document).ready(function () {
 		e.preventDefault();
 		newUser = false;
 
-		resetForm($('#form'));
+		resetForm($('#editUserForm'));
 		$('#newUserForm').hide();
 		$('#editUserForm').show();
 
@@ -111,7 +111,10 @@ $(document).ready(function () {
 				
 				$('#username').text(data.username);
 				$('#enabled').prop('checked', data.enabled);
-				$('#isAdmin').prop('checked', data.roles.includes("ROLE_ADMIN"));
+
+				for (var i = 0; i < data.roles.length; i++) {
+					$('#' + data.roles[i]).prop('checked', true);
+				}
 
 				if (data.memberId != null && data.memberId != "") {
 					$('#memberLink').html("<a href='/members/" + data.memberId + "'>" + data.memberName + "</a>");
@@ -145,11 +148,11 @@ $(document).ready(function () {
 			enabled = $('#newEnabled').prop("checked");
 			member = $('#memberId').val();
 			roles = new Array();
-			roles.push("ROLE_USER");
-
-			if ($('#newIsAdmin').prop("checked")) {
-				roles.push("ROLE_ADMIN");
-			}
+			
+			$('[name="NEW_ROLE"]:checked').map(function() {
+				roles.push(this.id);
+			});
+			
 			csrf = $("[name='_csrf']").val();
 
 			if($.trim(username) === ""){

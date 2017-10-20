@@ -20,7 +20,6 @@ import org.tenbitworks.repositories.MemberRepository;
 
 @Controller
 public class InterlockController {
-	//TODO Create a client for a thing
 	
 	@Autowired
 	AssetRepository assetRepository;

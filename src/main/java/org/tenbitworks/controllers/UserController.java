@@ -1,6 +1,7 @@
 package org.tenbitworks.controllers;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
@@ -32,6 +33,7 @@ import org.tenbitworks.dto.NewUserDTO;
 import org.tenbitworks.dto.UserDTO;
 import org.tenbitworks.email.EmailService;
 import org.tenbitworks.model.Member;
+import org.tenbitworks.model.Roles;
 import org.tenbitworks.repositories.MemberRepository;
 import org.tenbitworks.repositories.UserRepository;
 
@@ -61,6 +63,7 @@ public class UserController {
 		model.addAttribute("members",memberRepository.findAllByUser(null));
 		model.addAttribute("users", userRepository.findAll());
 		model.addAttribute("usercount", userRepository.count());
+		model.addAttribute("roles", Arrays.asList(Roles.values()));
 		return "users";
 	}
 
@@ -71,6 +74,7 @@ public class UserController {
 			model.addAttribute("members",memberRepository.findAll());
 			model.addAttribute("users", userRepository.findAll());
 			model.addAttribute("usercount", userRepository.count());
+			model.addAttribute("roles", Arrays.asList(Roles.values()));
 		}
 
 		model.addAttribute("user", loadUserDTO(username, security));

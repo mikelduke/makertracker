@@ -43,8 +43,10 @@
 						<div class="form-group" sec:authorize="hasRole('ROLE_ADMIN')">
 							<input type="checkbox" name="enabled" id="enabled" th:checked="${user?.enabled == true}" />Enabled<br />
 						</div>
-						<div class="form-group" sec:authorize="hasRole('ROLE_ADMIN')">
-							<input type="checkbox" name="isAdmin" id="isAdmin" th:checked="${user != null and #lists.contains(user.roles, 'ROLE_ADMIN')}" />Admin<br />
+						<div class="form-group well"  sec:authorize="hasRole('ROLE_ADMIN')">
+							<div th:each="role : ${roles}">
+								<input type="checkbox" th:name="${'ROLE_' + role}" th:id="${'ROLE_' + role}" th:checked="${user != null and #lists.contains(user.roles, 'ROLE_' + role)}"/><span th:inline="text">[[${role?.text}]]</span><br />
+							</div>
 						</div>
 						<div class="form-group well">
 							<div class="form-group" sec:authorize="hasRole('ROLE_ADMIN')">
@@ -72,8 +74,10 @@
 						<div class="form-group">
 							<input type="checkbox" name="newEnabled" id="newEnabled" checked="checked" />Enabled<br />
 						</div>
-						<div class="form-group">
-							<input type="checkbox" name="newIsAdmin" id="newIsAdmin" />Admin<br />
+						<div class="form-group well">
+							<div th:each="role : ${roles}">
+								<input type="checkbox" th:name="NEW_ROLE" th:id="${'ROLE_' + role}" /><span th:inline="text">[[${role?.text}]]</span><br />
+							</div>
 						</div>
 					</div>
 					<button sec:authorize="hasRole('ROLE_ADMIN')" type="submit" class="btn btn-primary" id="btn_submit">Change / Add User</button>
