@@ -11,6 +11,7 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.GrantedAuthority;
@@ -29,6 +30,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.tenbitworks.dto.ChangePasswordDTO;
 import org.tenbitworks.dto.NewUserDTO;
 import org.tenbitworks.dto.UserDTO;
+import org.tenbitworks.email.EmailService;
 import org.tenbitworks.model.Member;
 import org.tenbitworks.repositories.MemberRepository;
 import org.tenbitworks.repositories.UserRepository;
@@ -49,6 +51,9 @@ public class UserController {
 	
 	@Autowired
     MemberRepository memberRepository;
+	
+	@Autowired
+	EmailService emailService;
 	
 	@RequestMapping(value = "/users", method = RequestMethod.GET)
 	@Secured({"ROLE_ADMIN"})
@@ -181,7 +186,7 @@ public class UserController {
 		user.setPassword(newPassword);
 		userRepository.save(user);
 		
-		sendPasswordResetNotification(username, newPasswordPlain);
+		sendPasswordResetNotification(user, newPasswordPlain);
 		
 		return new ResponseEntity<String>("Password Reset", HttpStatus.OK);
 	}
@@ -203,7 +208,7 @@ public class UserController {
 
 		if (passwordChanged) {
 			userRepository.save(user);
-			sendPasswordChangedNotification(username);
+			sendPasswordChangedNotification(user);
 			
 			return new ResponseEntity<String>("Password Changed", HttpStatus.OK);
 		} else {
@@ -211,13 +216,23 @@ public class UserController {
 		}
 	}
 
-	private void sendPasswordChangedNotification(String username) {
-		// TODO Auto-generated method stub
+	private void sendPasswordChangedNotification(org.tenbitworks.model.User user) {
+		Member member = memberRepository.findOneByUser(user);
 		
+		SimpleMailMessage message = new SimpleMailMessage(); 
+		message.setTo(member.getEmail()); 
+		message.setSubject("MakerTracker Password Changed"); 
+		message.setText("Your password has changed.");
+		emailService.sendEmail(message);
 	}
 	
-	private void sendPasswordResetNotification(String username, String newPasswordPlain) {
-		// TODO Auto-generated method stub
+	private void sendPasswordResetNotification(org.tenbitworks.model.User user, String newPasswordPlain) {
+		Member member = memberRepository.findOneByUser(user);
 		
+		SimpleMailMessage message = new SimpleMailMessage(); 
+		message.setTo(member.getEmail()); 
+		message.setSubject("MakerTracker Password Reset"); 
+		message.setText("Please login with this password and enter a new one: " + newPasswordPlain);
+		emailService.sendEmail(message);
 	}
 }

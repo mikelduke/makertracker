@@ -16,7 +16,7 @@ $(document).ready(function () {
 				url:"/users/" + username + "/password",
 				dataType: "text",
 				success:function (data, status) {
-					alert("Password for " + username + " has been reset. A new password has been emailed.");
+					alert("Password for " + username + " has been reset. A new password will be emailed.");
 				},
 				error: function(data, status) {
 					console.log("Error changing password: " + status + " " + data);

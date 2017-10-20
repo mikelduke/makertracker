@@ -35,7 +35,8 @@ dependencies {
 	compile('org.springframework.boot:spring-boot-devtools')
 	compile('org.springframework.boot:spring-boot-starter-security')
 	compile('org.thymeleaf.extras:thymeleaf-extras-springsecurity4')
-
+	compile('org.springframework.boot:spring-boot-starter-mail')
+	
 	compile 'com.h2database:h2'
 	compile 'mysql:mysql-connector-java'
 	
