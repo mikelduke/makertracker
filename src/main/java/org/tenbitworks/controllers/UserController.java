@@ -126,7 +126,9 @@ public class UserController {
 			}
 			List<String> validRoles = new ArrayList<>();
 			for (String role : newUser.getRoles()) {
-				if (security.isUserInRole(role) && !validRoles.contains(role)) {
+				if (security.isUserInRole(Roles.ADMIN.toString()) && !validRoles.contains(role)) {
+					validRoles.add(role);
+				} else if (security.isUserInRole(role) && !validRoles.contains(role)) {
 					validRoles.add(role);
 				} else {
 					LOGGER.severe("Attempt to add invalid role " + role + " by user " + security.getUserPrincipal().getName());

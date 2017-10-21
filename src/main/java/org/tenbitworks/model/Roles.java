@@ -3,7 +3,8 @@ package org.tenbitworks.model;
 public enum Roles {
 	USER("User"),
 	ADMIN("Admin"),
-	API("Api");
+	API("Api"),
+	ACTUATOR("Metrics");
 	
 	private final String text;
 
