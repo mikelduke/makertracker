@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: header" lang="en"/>
+<body>
+<div id="mainContainer" class="flexBoxContainer">
+	<div th:replace="fragments/menu :: menu"></div>
+	<div class="container">
+		<div class="row">
+			<div class="row">
+				<div class="col-lg-8 col-md-7 col-sm-6">
+					<h1>Interlock Access Log</h1>
+					<table sec:authorize="hasRole('ROLE_ADMIN')" class="table table-striped table-hover">
+						<thead>
+						<tr>
+							<th style='display:none'>Id</th>
+							<th>Date</th>
+							<th>RFID</th>
+							<th>Event</th>
+							<th>Member</th>
+							<th>Asset</th>
+						</tr>
+						</thead>
+						<tbody>
+						<tr th:each="log : ${logs}">
+							<td th:id="${log.id}" th:inline="text" style='display:none'>[[${log.id}]]</td>
+							<td th:id="${log.logDate}" th:inline="text">[[${log.logDate}]]</td>
+							<td th:id="${log.rfid}" th:inline="text">[[${log.rfid}]]</td>
+							<td th:id="${log.event}" th:inline="text">[[${log.event}]]</td>
+							<td th:id="${log.member?.memberName}" th:inline="text">[[${log.member?.memberName != null ? log.member?.memberName : ''}]]</td>
+							<td th:id="${log.asset?.tenbitId}" th:inline="text">[[${log.asset?.tenbitId != null ? log.asset?.tenbitId : ''}]]</td>
+						</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div th:replace="fragments/footer :: footer"></div>
+</div>
+</body>
+</html>

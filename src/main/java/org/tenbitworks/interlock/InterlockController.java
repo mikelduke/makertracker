@@ -1,4 +1,4 @@
-package org.tenbitworks.controllers;
+package org.tenbitworks.interlock;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.tenbitworks.dto.InterlockAccessDTO;
 import org.tenbitworks.model.Asset;
 import org.tenbitworks.model.Member;
 import org.tenbitworks.repositories.AssetRepository;
@@ -20,12 +19,14 @@ import org.tenbitworks.repositories.MemberRepository;
 
 @Controller
 public class InterlockController {
-	
 	@Autowired
 	AssetRepository assetRepository;
 
 	@Autowired
 	MemberRepository memberRepository;
+	
+	@Autowired
+	InterlockLogController log;
 	
 	@RequestMapping(
 			value="/api/interlock/{assetId}/rfids/{rfid}", 
@@ -38,17 +39,21 @@ public class InterlockController {
 		
 		Asset asset = assetRepository.findOne(assetId);
 		if (asset == null) {
+			log.addLog(rfid, null, null, "Asset not found for id " + assetId);
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 		
 		Member member = memberRepository.findOneByRfid(rfid);
 		if (member == null) {
+			log.addLog(rfid, asset, null, "RFID Not Found");
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 		
 		if (checkAccess(asset, member)) {
+			log.addLog(rfid, asset, member, "Access Granted");
 			return new ResponseEntity<Long>(asset.getAccessControlTimeMS(), HttpStatus.OK);
 		} else {
+			log.addLog(rfid, asset, member, "Access Denied");
 			return new ResponseEntity<Long>(HttpStatus.FORBIDDEN);
 		}
 	}

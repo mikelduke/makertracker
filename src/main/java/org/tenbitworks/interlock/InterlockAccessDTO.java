@@ -1,4 +1,4 @@
-package org.tenbitworks.dto;
+package org.tenbitworks.interlock;
 
 import java.util.List;
 
