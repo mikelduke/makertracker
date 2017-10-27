@@ -15,6 +15,7 @@
             <div class="collapse navbar-collapse" id="myNavbar">
                 <ul class="nav navbar-nav">
                     <li sec:authorize="hasRole('ROLE_USER')" th:class="${#strings.contains(#httpServletRequest.requestURL, 'member') ? 'active' : ''}"><a href="/members">Members</a></li>
+                    <li sec:authorize="hasRole('ROLE_USER')" th:class="${#strings.contains(#httpServletRequest.requestURL, 'trainingtypes') ? 'active' : ''}"><a href="/trainingtypes">Trainings</a></li>
                     <li sec:authorize="hasRole('ROLE_USER')" th:class="${#strings.contains(#httpServletRequest.requestURL, 'assets') ? 'active' : ''}"><a href="/assets">Assets</a></li>
                     <li sec:authorize="hasRole('ROLE_ADMIN')" th:class="${#strings.contains(#httpServletRequest.requestURL, 'users') ? 'active' : ''}"><a href="/users">Users</a></li>
                     <li sec:authorize="hasRole('ROLE_ADMIN')" th:class="${#strings.contains(#httpServletRequest.requestURL, 'logs') ? 'active' : ''}"><a href="/logs">Logs</a></li>

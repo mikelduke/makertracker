@@ -2,8 +2,6 @@ package org.tenbitworks.model;
 
 import java.math.BigDecimal;
 import java.sql.Date;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,9 +10,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
@@ -54,12 +50,8 @@ public class Asset {
 	
 	boolean trainingRequired;
 	
-	@ManyToMany
-	@JoinTable(
-			name="asset_members", 
-			joinColumns=@JoinColumn(name="asset_id", referencedColumnName="id"),
-			inverseJoinColumns=@JoinColumn(name="member_id", referencedColumnName="id"))
-	List<Member> members;
+	@ManyToOne
+	TrainingType trainingType;
 	
 	long accessControlTimeMS;
 	
@@ -207,27 +199,20 @@ public class Asset {
 		this.trainingRequired = trainingRequired;
 	}
 
-	public List<Member> getMembers() {
-		return members;
-	}
-
-	public void setMembers(List<Member> members) {
-		this.members = members;
-	}
-	
-	public void addMember(Member member) {
-		if (this.members == null) {
-			members = new ArrayList<>();
-		}
-		this.members.add(member);
-	}
-
 	public long getAccessControlTimeMS() {
 		return accessControlTimeMS;
 	}
 
 	public void setAccessControlTimeMS(long accessControlTimeMS) {
 		this.accessControlTimeMS = accessControlTimeMS;
+	}
+	
+	public TrainingType getTrainingType() {
+		return trainingType;
+	}
+
+	public void setTrainingType(TrainingType trainingType) {
+		this.trainingType = trainingType;
 	}
 
 	@Override
@@ -236,8 +221,8 @@ public class Asset {
 				+ ", dateAcquired=" + dateAcquired + ", dateRemoved=" + dateRemoved + ", brand=" + brand
 				+ ", modelNumber=" + modelNumber + ", serialNumber=" + serialNumber + ", retailValue=" + retailValue
 				+ ", webLink=" + webLink + ", operator=" + operator + ", donor=" + donor + ", status=" + status
-				+ ", trainingRequired=" + trainingRequired + 
-				", accessControlTimeMS=" + accessControlTimeMS + "]";
+				+ ", trainingRequired=" + trainingRequired + ", trainingType=" + trainingType + ", accessControlTimeMS="
+				+ accessControlTimeMS + "]";
 	}
 
 	@Override
@@ -251,7 +236,6 @@ public class Asset {
 		result = prime * result + ((description == null) ? 0 : description.hashCode());
 		result = prime * result + ((donor == null) ? 0 : donor.hashCode());
 		result = prime * result + (int) (id ^ (id >>> 32));
-		result = prime * result + ((members == null) ? 0 : members.hashCode());
 		result = prime * result + ((modelNumber == null) ? 0 : modelNumber.hashCode());
 		result = prime * result + ((operator == null) ? 0 : operator.hashCode());
 		result = prime * result + ((retailValue == null) ? 0 : retailValue.hashCode());
@@ -260,6 +244,7 @@ public class Asset {
 		result = prime * result + ((tenbitId == null) ? 0 : tenbitId.hashCode());
 		result = prime * result + ((title == null) ? 0 : title.hashCode());
 		result = prime * result + (trainingRequired ? 1231 : 1237);
+		result = prime * result + ((trainingType == null) ? 0 : trainingType.hashCode());
 		result = prime * result + ((webLink == null) ? 0 : webLink.hashCode());
 		return result;
 	}
@@ -302,11 +287,6 @@ public class Asset {
 			return false;
 		if (id != other.id)
 			return false;
-		if (members == null) {
-			if (other.members != null)
-				return false;
-		} else if (!members.equals(other.members))
-			return false;
 		if (modelNumber == null) {
 			if (other.modelNumber != null)
 				return false;
@@ -341,6 +321,11 @@ public class Asset {
 			return false;
 		if (trainingRequired != other.trainingRequired)
 			return false;
+		if (trainingType == null) {
+			if (other.trainingType != null)
+				return false;
+		} else if (!trainingType.equals(other.trainingType))
+			return false;
 		if (webLink == null) {
 			if (other.webLink != null)
 				return false;
@@ -348,6 +333,4 @@ public class Asset {
 			return false;
 		return true;
 	}
-	
-	
 }

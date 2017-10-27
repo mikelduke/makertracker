@@ -10,6 +10,7 @@ import javax.validation.constraints.NotNull;
 import org.tenbitworks.model.Asset;
 import org.tenbitworks.model.AssetStatus;
 import org.tenbitworks.model.Member;
+import org.tenbitworks.model.TrainingType;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -44,6 +45,8 @@ public class AssetDTO {
 	
 	boolean trainingRequired;
 	
+	TrainingType trainingType;
+	
 	List<Member> members;
 	List<String> memberNames;
 	
@@ -73,7 +76,7 @@ public class AssetDTO {
 		
 		this.trainingRequired = asset.isTrainingRequired();
 		
-		this.members = asset.getMembers();
+		this.trainingType = asset.getTrainingType();
 		
 		this.memberNames = new ArrayList<>();
 		this.members.forEach((member) -> {

@@ -66,22 +66,23 @@ public class AssetController {
 				AssetDTO dto = new AssetDTO(asset);
 		
 				if (!security.isUserInRole("ADMIN")) {
-					asset.setMembers(null);
+					asset.getTrainingType().setMembers(null);
 				}
 		
 				assets.add(dto);
 			});
-		} else {
+		} /*else {
+			//TODO Return trainingsList or assets for member
 			assetRepository.findAllByMembers(memberRepository.findOne(memberId)).forEach(asset -> {
 				AssetDTO dto = new AssetDTO(asset);
 				
 				if (!security.isUserInRole("ADMIN")) {
-					asset.setMembers(null);
+					asset.getTrainingType().setMembers(null);
 				}
 		
 				assets.add(dto);
 			});
-		}
+		}*/
 		return assets;
 	}
 

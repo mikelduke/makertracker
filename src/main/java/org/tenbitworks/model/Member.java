@@ -58,7 +58,7 @@ public class Member {
 	
 	@JsonIgnore
 	@ManyToMany(mappedBy="members", fetch=FetchType.LAZY)
-	List<Asset> assets;
+	List<TrainingType> trainingTypeList;
 	
 	public Member() { }
 
@@ -249,11 +249,11 @@ public class Member {
 		return true;
 	}
 
-	public List<Asset> getAssets() {
-		return assets;
+	public List<TrainingType> getTrainingTypeList() {
+		return trainingTypeList;
 	}
 
-	public void setAssets(List<Asset> assets) {
-		this.assets = assets;
+	public void setTrainingTypeList(List<TrainingType> trainingTypeList) {
+		this.trainingTypeList = trainingTypeList;
 	}
 }
