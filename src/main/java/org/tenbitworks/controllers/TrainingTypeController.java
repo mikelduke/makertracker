@@ -32,6 +32,8 @@ public class TrainingTypeController {
 	@PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
 	public String getTrainingType(@PathVariable Long id, Model model){
 		model.addAttribute("trainingTypes", trainingTypeRepository.findAll());
+		model.addAttribute("members", memberRepository.findAll());
+		
 		return "trainingTypes";
 	}
 
@@ -46,6 +48,8 @@ public class TrainingTypeController {
 	@PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
 	public String trainingTypeList(Model model){
 		model.addAttribute("trainingTypes",trainingTypeRepository.findAll());
+		model.addAttribute("members", memberRepository.findAll());
+		
 		return "trainingTypes";
 	}
 

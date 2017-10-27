@@ -1,32 +1,32 @@
 $(document).ready(function () {
 	
-//	$('#btn_addmember').on("click", function(e) {
-//		e.preventDefault();
-//
-//		var memberId = $('#memberId').val();
-//		
-//		if (memberId != '' && !$('#member-row-' + memberId).length) {
-//			var memberName = $("#memberId>option:selected").html()
-//			addMemberRow(memberId, memberName);
-//		}
-//	});
-//	
-//	function addMemberRow(memberId, memberName) {
-//		var newRow = '<tr id="member-row-' + memberId + '" class="member-row">';
-//		newRow += '<td id="member-id-' + memberId + '" style="display:none">' + memberId + '</td>';
-//		newRow += '<td id="member-' + memberName + '">' + memberName + '</td>';
-//		newRow += '<td id="' + memberId + '"><button class="btn btn-danger remove-member">X</button></td>';
-//		newRow += '</tr>';
-//		
-//		$('#memberTable').find('tbody').append(newRow);
-//	}
+	$('#btn_addmember').on("click", function(e) {
+		e.preventDefault();
+
+		var memberId = $('#memberId').val();
+		
+		if (memberId != '' && !$('#member-row-' + memberId).length) {
+			var memberName = $("#memberId>option:selected").html()
+			addMemberRow(memberId, memberName);
+		}
+	});
 	
-//	$('#trainedMembersAdminForm').on("click", ".remove-member", function(e){
-//		e.preventDefault();
-//		
-//		var id = $(this).closest("td").attr("id");
-//		$('#member-row-' + id).remove();
-//	});
+	function addMemberRow(memberId, memberName) {
+		var newRow = '<tr id="member-row-' + memberId + '" class="member-row">';
+		newRow += '<td id="member-id-' + memberId + '" style="display:none">' + memberId + '</td>';
+		newRow += '<td id="member-' + memberName + '">' + memberName + '</td>';
+		newRow += '<td id="' + memberId + '"><button class="btn btn-danger remove-member">X</button></td>';
+		newRow += '</tr>';
+		
+		$('#memberTable').find('tbody').append(newRow);
+	}
+	
+	$('#trainedMembersAdminForm').on("click", ".remove-member", function(e){
+		e.preventDefault();
+		
+		var id = $(this).closest("td").attr("id");
+		$('#member-row-' + id).remove();
+	});
 	
 	$('#btn_submit').on("click",function (e) {
 		e.preventDefault();
@@ -34,13 +34,12 @@ $(document).ready(function () {
 		var formAr = formToObject($('#form'));
 		var csrf = $("[name='_csrf']").val();
 		
-//		formAr["id"] = $('#trainingTypeId').val();
+		formAr["id"] = $('#trainingTypeId').val();
 		
 //		var trainedMembers = new Array();
 //		$('#memberTable tbody tr').each(function(){
 //			trainedMembers.push($(this)[0].id.substring("member-row-".length));
 //		});
-//		formAr["members"] = trainedMembers;
 		
 		if($.trim($('#name')) === ""){
 			alert("Name cannot be empty");
@@ -54,6 +53,21 @@ $(document).ready(function () {
 				dataType: 'json',
 				timeout: 6000,
 				success: function (data) {
+					$('#memberTable tbody tr').each(function(){
+						var memberId = $(this)[0].id.substring("member-row-".length);
+						
+						$.ajax({
+							headers: { 'X-CSRF-TOKEN': csrf},
+							type: "POST",
+							contentType: "application/json",
+							url: "/trainings/" + data + "/members/" + memberId,
+							data: '',//JSON.stringify(formAr),
+							dataType: 'json',
+							timeout: 6000,
+							success: function (data) {}
+						});
+					});
+					
 					if (confirm("Training Type with Id " +data + " Saved")){
 						window.location.reload();
 					}

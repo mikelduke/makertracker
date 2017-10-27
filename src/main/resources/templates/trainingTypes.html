@@ -51,31 +51,31 @@
 						<label for="description">Description:</label>
 						<textarea class="form-control" id="description" name="description" th:text="${trainingType?.description}"></textarea>
 					</div>
-<!-- 					<div class="form-group well" id="trainedMembersAdminForm" sec:authorize="hasRole('ROLE_ADMIN')" th:style="${asset?.trainingRequired == true ? '' : 'display:none'}"> -->
-<!-- 						<b>Trained Members</b> -->
-<!-- 						<table id="memberTable" class="table table-striped table-hover"> -->
-<!-- 						<thead> -->
-<!-- 							<tr> -->
-<!-- 								<th style="display:none">Member ID</th> -->
-<!-- 								<th>Name</th> -->
-<!-- 								<th>Remove</th> -->
-<!-- 							</tr> -->
-<!-- 						</thead> -->
-<!-- 						<tbody id="memberTableBody"> -->
-<!-- 							<tr th:each="member : ${asset?.members}" th:id="'member-row-' + ${member?.id}" class='member-row'> -->
-<!-- 								<td th:id="'member-id-' + ${member?.id}" th:inline="text" style="display:none">[[${member?.id}]]</td> -->
-<!-- 								<td th:id="'member-' + ${member?.memberName}" th:inline="text">[[${member?.memberName}]]</td> -->
-<!-- 								<td th:id="${member?.id}"><a class="btn btn-danger remove-member">X</a></td> -->
-<!-- 							</tr> -->
-<!-- 						</tbody> -->
-<!-- 						</table> -->
-<!-- 						<div> -->
-<!-- 							<div id='div_addMember'> -->
-<!-- 								<div th:replace="fragments/memberDropDown :: memberDropDown(true)"></div> -->
-<!-- 							</div> -->
-<!-- 							<a type="submit" class="btn btn-success" id="btn_addmember">Add Member</a> -->
-<!-- 						</div> -->
-<!-- 					</div> -->
+					<div class="form-group well" id="trainedMembersAdminForm" sec:authorize="hasRole('ROLE_ADMIN')">
+						<b>Trained Members</b>
+						<table id="memberTable" class="table table-striped table-hover">
+						<thead>
+							<tr>
+								<th style="display:none">Member ID</th>
+								<th>Name</th>
+								<th>Remove</th>
+							</tr>
+						</thead>
+						<tbody id="memberTableBody">
+							<tr th:each="memberTraining : ${memberTrainings}" th:id="'member-row-' + ${memberTraining?.member?.id}" class='member-row'>
+								<td th:id="'member-id-' + ${memberTraining?.member?.id}" th:inline="text" style="display:none">[[${memberTraining?.member?.id}]]</td>
+								<td th:id="'member-' + ${memberTraining?.member?.memberName}" th:inline="text">[[${memberTraining?.member?.memberName}]]</td>
+								<td th:id="${memberTraining?.member?.id}"><a class="btn btn-danger remove-member">X</a></td>
+							</tr>
+						</tbody>
+						</table>
+						<div>
+							<div id='div_addMember'>
+								<div th:replace="fragments/memberDropDown :: memberDropDown(false)"></div>
+							</div>
+							<a type="submit" class="btn btn-success" id="btn_addmember">Add Member</a>
+						</div>
+					</div>
 <!-- 					<div class="form-group well" id="trainedMembersForm" sec:authorize="!hasRole('ROLE_ADMIN')" th:style="${asset?.trainingRequired == true ? '' : 'display:none'}"> -->
 <!-- 						<b>Trained Members</b> -->
 <!-- 						<table id="memberNameTable" class="table table-striped table-hover"> -->
