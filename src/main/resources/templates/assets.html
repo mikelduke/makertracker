@@ -13,7 +13,7 @@
 						<tr>
 							<th>Id</th>
 							<th>Asset Name</th>
-							<th>Training Required</th>
+							<th>Training Type</th>
 							<th sec:authorize="hasRole('ROLE_ADMIN')">Delete</th>
 						</tr>
 						</thead>
@@ -22,7 +22,7 @@
 						<tr th:each="asset : ${assets}">
 							<td th:id="${asset.id}" th:inline="text"><a class="edit-asset">[[${asset.tenbitId}]]</a></td>
 							<td th:text="${asset.title}"></td>
-							<td th:text="${asset.trainingRequired == true? 'Y' : 'N'}"></td>
+							<td th:text="${asset.trainingType?.name}"></td>
 							<td sec:authorize="hasRole('ROLE_ADMIN')" th:id="${asset.id}"><a class="btn btn-danger delete-asset">Delete</a></td>
 						</tr>
 						
@@ -106,10 +106,9 @@
 					<div class="form-group">
 						Training Required? <input type="checkbox" name="trainingRequired" id="trainingRequired" th:checked="${asset?.trainingRequired == true}" /> <br />
 					</div>
-					<div class="form-group">
+					<div class="form-group" id="trainingTypeForm" th:style="${asset?.trainingRequired == true ? '' : 'display:none'}">
 						<label for="status">Training Type:</label>
 						<select class="form-control" id="trainingType" name="trainingType">
-							<option value=''>None</option>
 							<option th:each="trainingType : ${trainingTypes}"
 								th:value="${trainingType.id}"
 								th:text="${trainingType.name}" 

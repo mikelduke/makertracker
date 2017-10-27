@@ -1,11 +1,17 @@
 $(document).ready(function () {
 	
 	$('#trainingRequired').change(function() {
+		if ($('#trainingRequired').prop("checked")) {
+			$('#trainingTypeForm').show();
+		} else {
+			$('#trainingTypeForm').hide();
+		}
+		
 		if ($('#trainedMembersAdminForm').length) {
 			if ($('#trainingRequired').prop("checked")) {
-				$('#trainedMembersAdminForm').show();
+				$('#trainingType').show();
 			} else {
-				$('#trainedMembersAdminForm').hide();
+				$('#trainingType').hide();
 			}
 		} else if ($('#trainedMembersForm').length) {
 			if ($('#trainingRequired').prop("checked")) {
@@ -52,7 +58,7 @@ $(document).ready(function () {
 		
 		formAr["id"] = $('#assetId').val();
 		formAr["trainingRequired"] = $('#trainingRequired').prop('checked');
-		formAr["trainingType"] = Number.parseInt($('#trainingType').val());
+		formAr["trainingType"] = $('#trainingRequired').prop('checked') ? Number.parseInt($('#trainingType').val()) : null;
 		
 		var trainedMembers = new Array();
 		$('#memberTable tbody tr').each(function(){
@@ -118,6 +124,12 @@ $(document).ready(function () {
 				$('#assetId').val(data.id)
 				$('#trainingRequired').prop('checked', data.trainingRequired);
 				
+				if (data.trainingRequired) {
+					$('#trainingTypeForm').show();
+				} else {
+					$('#trainingTypeForm').hide();
+				}
+				
 				if ($('#trainedMembersAdminForm').length) {
 					$('#memberTableBody').empty();
 					
@@ -163,6 +175,8 @@ $(document).ready(function () {
 		$('#webLink').val('');
 		$('#dateRemoved').val('');
 		$('#trainingRequired').prop('checked', false);
+		$('#trainingTypeForm').hide();
+		
 		$('#accessControlTimeMS').val('');
 		
 		if ($('#trainedMembersAdminForm').length) {
