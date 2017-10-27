@@ -39,13 +39,7 @@ public class TrainingTypeController {
 	@ResponseBody
 	@PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
 	public TrainingType getTrainingTypeJson(@PathVariable Long id, Model model, SecurityContextHolderAwareRequestWrapper security){
-		TrainingType trainingType = trainingTypeRepository.findOne(id);
-
-		if (!security.isUserInRole("ADMIN")) {
-			trainingType.setMembers(null);
-		}
-
-		return trainingType;
+		return trainingTypeRepository.findOne(id);
 	}
 
 	@RequestMapping(value = "/trainingtypes",method = RequestMethod.GET)

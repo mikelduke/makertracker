@@ -78,15 +78,16 @@ public class InterlockController {
 		iad.setAssetId(assetId);
 		
 		List<String> rfidList = new ArrayList<>();
-		if (asset.isTrainingRequired()) {
-			for (Member m : asset.getTrainingType().getMembers()) {
-				rfidList.add(m.getRfid());
-			}
-		} else {
-			for (Member m : memberRepository.findAll()) {
-				rfidList.add(m.getRfid());
-			}
-		}
+		//TODO Look up trainings list for member
+//		if (asset.isTrainingRequired()) {
+//			for (Member m : asset.getTrainingType().getMembers()) {
+//				rfidList.add(m.getRfid());
+//			}
+//		} else {
+//			for (Member m : memberRepository.findAll()) {
+//				rfidList.add(m.getRfid());
+//			}
+//		}
 		
 		iad.setRfidList(rfidList);
 		
@@ -94,12 +95,13 @@ public class InterlockController {
 	}
 	
 	private static boolean checkAccess(Asset asset, Member member) {
-		if (asset.isTrainingRequired() && asset.getTrainingType().getMembers().contains(member)) {
+		//TODO Check new trainings list
+//		if (asset.isTrainingRequired() && asset.getTrainingType().getMembers().contains(member)) {
+//			return true;
+//		} else if (!asset.isTrainingRequired()) {
 			return true;
-		} else if (!asset.isTrainingRequired()) {
-			return true;
-		} else {
-			return false;
-		}
+//		} else {
+//			return false;
+//		}
 	}
 }

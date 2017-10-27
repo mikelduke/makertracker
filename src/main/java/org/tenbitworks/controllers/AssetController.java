@@ -65,9 +65,9 @@ public class AssetController {
 			assetRepository.findAll().forEach(asset -> {
 				AssetDTO dto = new AssetDTO(asset);
 		
-				if (!security.isUserInRole("ADMIN")) {
-					asset.getTrainingType().setMembers(null);
-				}
+//				if (!security.isUserInRole("ADMIN")) {
+//					asset.getTrainingType().setMembers(null);
+//				}
 		
 				assets.add(dto);
 			});
