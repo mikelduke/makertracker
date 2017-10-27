@@ -52,6 +52,7 @@ $(document).ready(function () {
 		
 		formAr["id"] = $('#assetId').val();
 		formAr["trainingRequired"] = $('#trainingRequired').prop('checked');
+		formAr["trainingType"] = Number.parseInt($('#trainingType').val());
 		
 		var trainedMembers = new Array();
 		$('#memberTable tbody tr').each(function(){

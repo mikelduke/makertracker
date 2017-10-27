@@ -33,7 +33,7 @@ public class InterlockController {
 			method=RequestMethod.GET)
 	@ResponseBody
 	@PreAuthorize("hasRole('ROLE_API')")
-	public ResponseEntity<Long> checkAccessToAsset(
+	public ResponseEntity<Long> checkAccessToAsset( //TODO Change to use 10bit friendly id
 			@PathVariable long assetId, 
 			@PathVariable String rfid){
 		

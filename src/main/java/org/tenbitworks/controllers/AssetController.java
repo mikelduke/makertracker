@@ -1,9 +1,5 @@
 package org.tenbitworks.controllers;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -14,12 +10,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.tenbitworks.dto.AssetDTO;
 import org.tenbitworks.model.Asset;
 import org.tenbitworks.repositories.AssetRepository;
 import org.tenbitworks.repositories.MemberRepository;
+import org.tenbitworks.repositories.TrainingTypeRepository;
 
 @Controller
 public class AssetController {
@@ -29,6 +24,9 @@ public class AssetController {
     
     @Autowired
     MemberRepository memberRepository;
+    
+    @Autowired
+    TrainingTypeRepository trainingTypeRepository;
 
     @RequestMapping(value="/assets/{id}", method=RequestMethod.GET)
     @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
@@ -37,54 +35,16 @@ public class AssetController {
         model.addAttribute("asset", assetRepository.findOne(id));
         model.addAttribute("assets", assetRepository.findAll());
         model.addAttribute("assetcount", assetRepository.count());
+        model.addAttribute("trainingTypes", trainingTypeRepository.findAll());
         return "assets";
     }
     
     @RequestMapping(value="/assets/{id}", method=RequestMethod.GET, produces={"application/json"})
     @ResponseBody
     @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
-    public AssetDTO getAssetJson(@PathVariable Long id, Model model, SecurityContextHolderAwareRequestWrapper security){
-        AssetDTO asset = new AssetDTO(assetRepository.findOne(id));
-        
-        if (!security.isUserInRole("ADMIN")) {
-            asset.setMembers(null);
-        }
-        
-        return asset;
+    public Asset getAssetJson(@PathVariable Long id, Model model, SecurityContextHolderAwareRequestWrapper security){
+        return assetRepository.findOne(id);
     }
-
-	@RequestMapping(value = "/assets", method = RequestMethod.GET, produces={"application/json"})
-	@ResponseBody
-	@PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
-	public List<AssetDTO> assetsListJson(
-			@RequestParam(name="member-id", required=false) UUID memberId, 
-			SecurityContextHolderAwareRequestWrapper security){
-		List<AssetDTO> assets = new ArrayList<>();
-		
-		if (memberId == null) {
-			assetRepository.findAll().forEach(asset -> {
-				AssetDTO dto = new AssetDTO(asset);
-		
-//				if (!security.isUserInRole("ADMIN")) {
-//					asset.getTrainingType().setMembers(null);
-//				}
-		
-				assets.add(dto);
-			});
-		} /*else {
-			//TODO Return trainingsList or assets for member
-			assetRepository.findAllByMembers(memberRepository.findOne(memberId)).forEach(asset -> {
-				AssetDTO dto = new AssetDTO(asset);
-				
-				if (!security.isUserInRole("ADMIN")) {
-					asset.getTrainingType().setMembers(null);
-				}
-		
-				assets.add(dto);
-			});
-		}*/
-		return assets;
-	}
 
     @RequestMapping(value = "/assets",method = RequestMethod.GET)
     @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
@@ -92,6 +52,7 @@ public class AssetController {
         model.addAttribute("members",memberRepository.findAll());
         model.addAttribute("assets", assetRepository.findAll());
         model.addAttribute("assetcount", assetRepository.count());
+        model.addAttribute("trainingTypes", trainingTypeRepository.findAll());
         return "assets";
     }
     
