@@ -14,6 +14,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
+import org.hibernate.validator.constraints.NotEmpty;
+
 @Entity
 @Table(name="asset")
 public class Asset {
@@ -23,10 +25,12 @@ public class Asset {
 	private long id;
 
 	@NotNull
-	@Column(unique = true)
+	@NotEmpty
+	@Column(unique = true, nullable=false)
 	String tenbitId;
 
 	@NotNull
+	@NotEmpty
 	String title;
 
 	@Column(name = "description", length = 1000)

@@ -1,5 +1,7 @@
 package org.tenbitworks.controllers;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -59,7 +61,7 @@ public class AssetController {
     @RequestMapping(value = "/assets", method = RequestMethod.POST)
     @ResponseBody
     @Secured({"ROLE_ADMIN"})
-    public Long saveAsset(@RequestBody Asset asset) {
+    public Long saveAsset(@RequestBody @Valid Asset asset) {
         assetRepository.save(asset);
         return asset.getId();
     }
