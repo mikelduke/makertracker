@@ -42,26 +42,19 @@ public class MemberTrainingController {
 	@RequestMapping(value="/trainings/{id}/members/", method=RequestMethod.GET)
 	@ResponseBody
 	@PreAuthorize("hasAnyRole('ADMIN', 'USER')")
-	public List<Member> getMembersForTrainingType(
+	public List<MemberTrainings> getMembersForTrainingType(
 			@PathVariable Long id,
 			SecurityContextHolderAwareRequestWrapper security) {
-		List<Member> memberList = new ArrayList<>();
 		TrainingType trainingType = trainingTypeRepository.findOne(id);
 		List<MemberTrainings> trainings = memberTrainingRepository.findAllByTrainingType(trainingType);
 		
-		for (MemberTrainings mt : trainings) {
-			memberList.add(mt.getMember());
-		}
-		
-		if (!security.isUserInRole("ADMIN")) { //Clear out member info for non-admin users
-			List<Member> limitedList = new ArrayList<>();
-			memberList.forEach(member -> {
-				limitedList.add(new Member(member.getMemberName(), null));
+		if (!security.isUserInRole("ADMIN")) {
+			trainings.forEach(member -> {
+				member.setMember(new Member(member.getMember().getMemberName(), null));
 			});
-			memberList = limitedList;
 		}
 		
-		return memberList;
+		return trainings;
 	}
 
 	@RequestMapping(value="/trainings/{id}/members/{memberId}", method=RequestMethod.POST)

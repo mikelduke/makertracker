@@ -12,7 +12,7 @@ $(document).ready(function () {
 		
 		if (memberId != '' && !$('#member-row-' + memberId).length) {
 			var memberName = $("#memberId>option:selected").html()
-			addMemberRow(memberId, memberName);
+			addMemberRow(memberId, memberName, '', 'You');
 		}
 	});
 	
@@ -135,7 +135,7 @@ function loadMembers(members) {
 		
 		if (members != null) {
 			for (var i = 0; i < members.length; i++) {
-				addMemberRow(members[i].id, members[i].memberName)
+				addMemberRow(members[i].member.id, members[i].member.memberName, members[i].trainingDate, members[i].addedBy.username);
 			}
 		}
 	} else {
@@ -143,7 +143,7 @@ function loadMembers(members) {
 		
 		if (members != null) {
 			for (var i = 0; i < members.length; i++) {
-				var newRow = '<tr><td id="member-' + members[i].memberName + '">' + members[i].memberName + '</td></tr>';
+				var newRow = '<tr><td id="member-' + members[i].member.memberName + '">' + members[i].member.memberName + '</td></tr>';
 				
 				$('#memberNameTable').find('tbody').append(newRow);
 			}
@@ -151,10 +151,18 @@ function loadMembers(members) {
 	}
 }
 
-function addMemberRow(memberId, memberName) {
+function addMemberRow(memberId, memberName, trainingDate, addedBy) {
+	var date = '';
+	
+	if (trainingDate != '' && trainingDate != null) {
+		date = new Date(trainingDate).toLocaleString();
+	}
+	
 	var newRow = '<tr id="member-row-' + memberId + '" class="member-row">';
 	newRow += '<td id="member-id-' + memberId + '" style="display:none">' + memberId + '</td>';
 	newRow += '<td id="member-' + memberName + '">' + memberName + '</td>';
+	newRow += '<td>' + date + '</td>';
+	newRow += '<td>' + addedBy + '</td>';
 	newRow += '<td id="' + memberId + '"><button class="btn btn-danger remove-member">X</button></td>';
 	newRow += '</tr>';
 	
