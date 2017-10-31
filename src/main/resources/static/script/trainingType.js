@@ -47,7 +47,9 @@ $(document).ready(function () {
 					
 					$('#memberTable tbody tr').each(function(){
 						var memberId = $(this)[0].id.substring("member-row-".length);
-						trainedMembers.push(memberId);
+						if (memberId.length > 0) {
+							trainedMembers.push(memberId);
+						}
 					});
 					
 					$.ajax({
@@ -59,7 +61,7 @@ $(document).ready(function () {
 						dataType: 'json',
 						timeout: 6000,
 						success: function (dataMember) {
-							if (confirm("Training Type with Id " +data + " Saved")){
+							if (confirm("Training Type with Id " + data + " Saved")){
 								window.location.reload();
 							}
 						}
