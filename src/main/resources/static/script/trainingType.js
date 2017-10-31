@@ -1,7 +1,7 @@
 $(document).ready(function () {
 	
 	var id = parseInt($('#id').attr('value'));
-	if (id != undefined && id != null) {
+	if (!isNaN(id)) {
 		loadTraining(id);
 	}
 	
@@ -69,24 +69,24 @@ $(document).ready(function () {
 		}
 	});
 
-//	//Complete order button handler
-//	$('.delete-asset').on("click", function(e){
-//		e.preventDefault();
-//		if(confirm("Delete?")){
-//			var id = $(this).closest("td").attr("id");
-//			var csrf = $("[name='_csrf']").val();
-//			$.ajax({
-//				headers: { 'X-CSRF-TOKEN': csrf},
-//				type:"DELETE",
-//				url:"/trainingtypes/" + id,
-//				success:function (data) {
-//					window.location.reload();
-//				}
-//			});
-//		}
-//	});
+	$('.delete-training').on("click", function(e){
+		e.preventDefault();
+		if(confirm("Delete?")){
+			var id = $(this).closest("td").attr("id");
+			var csrf = $("[name='_csrf']").val();
+			$.ajax({
+				headers: { 'X-CSRF-TOKEN': csrf},
+				type:"DELETE",
+				url:"/trainingtypes/" + id,
+				success:function (data) {
+					window.history.pushState('Edit Training', 'MakerTracker', '/trainingtypes/');
+					window.location.reload();
+				}
+			});
+		}
+	});
 
-	$('.edit-asset').on("click", function(e){
+	$('.edit-training').on("click", function(e){
 		e.preventDefault();
 
 		var id = parseInt($(this).closest("td").attr("id"));
@@ -123,7 +123,7 @@ function loadTraining(id) {
 				$('#' + key).val(data[key]);
 			});
 			
-			window.history.pushState('Edit Asset ' + data.id, 'MakerTracker', '/trainingtypes/' + data.id);
+			window.history.pushState('Edit Training ' + data.id, 'MakerTracker', '/trainingtypes/' + data.id);
 		}
 	});
 	
@@ -139,7 +139,6 @@ function loadTraining(id) {
 
 function loadMembers(members) {
 	if ($('#trainedMembersAdminForm').length) {
-		console.log("clear");
 		$('#memberTableBody').empty();
 		
 		if (members != null) {

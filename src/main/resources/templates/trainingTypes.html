@@ -21,17 +21,17 @@
 						<tbody>
 
 						<tr th:each="trainingType : ${trainingTypes}">
-							<td th:id="${trainingType.id}" th:inline="text"><a class="edit-asset">[[${trainingType.id}]]</a></td>
+							<td th:id="${trainingType.id}" th:inline="text"><a class="edit-training">[[${trainingType.id}]]</a></td>
 							<td th:text="${trainingType.name}"></td>
 							<td th:text="${trainingType.description}"></td>
-							<td sec:authorize="hasRole('ROLE_ADMIN')" th:id="${trainingType.id}"><a class="btn btn-danger delete-asset">Delete</a></td>
+							<td sec:authorize="hasRole('ROLE_ADMIN')" th:id="${trainingType.id}"><a class="btn btn-danger delete-training">Delete</a></td>
 						</tr>
 						
 						<tr sec:authorize="hasRole('ROLE_ADMIN')">
 							<td></td>
 							<td></td>
 							<td></td>
-							<td><a class="btn btn-primary new-asset">New</a></td>
+							<td><a class="btn btn-primary new-training">New</a></td>
 						</tr>
 						</tbody>
 					</table>

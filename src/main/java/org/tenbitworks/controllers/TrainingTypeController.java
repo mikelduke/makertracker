@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.tenbitworks.model.TrainingType;
 import org.tenbitworks.repositories.AssetRepository;
 import org.tenbitworks.repositories.MemberRepository;
+import org.tenbitworks.repositories.MemberTrainingsRepository;
 import org.tenbitworks.repositories.TrainingTypeRepository;
 
 @Controller
@@ -27,6 +28,9 @@ public class TrainingTypeController {
 
 	@Autowired
 	MemberRepository memberRepository;
+	
+	@Autowired
+	MemberTrainingsRepository memberTrainingRepository;
 
 	@RequestMapping(value="/trainingtypes/{id}", method=RequestMethod.GET)
 	@PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
@@ -66,6 +70,9 @@ public class TrainingTypeController {
 	@ResponseBody
 	@Secured({"ROLE_ADMIN"})
 	public String removeTrainingType(@PathVariable Long id){
+		TrainingType trainingType = trainingTypeRepository.findOne(id);
+		
+		memberTrainingRepository.findAllByTrainingType(trainingType).forEach(memberTrainingRepository::delete);
 		trainingTypeRepository.delete(id);
 		return id.toString();
 	}
