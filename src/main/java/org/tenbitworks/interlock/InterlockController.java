@@ -29,17 +29,17 @@ public class InterlockController {
 	InterlockLogController log;
 	
 	@RequestMapping(
-			value="/api/interlock/{assetId}/rfids/{rfid}", 
+			value="/api/interlock/{tenbitId}/rfids/{rfid}", 
 			method=RequestMethod.GET)
 	@ResponseBody
 	@PreAuthorize("hasRole('ROLE_API')")
 	public ResponseEntity<Long> checkAccessToAsset( //TODO Change to use 10bit friendly id
-			@PathVariable long assetId, 
+			@PathVariable String tenbitId, 
 			@PathVariable String rfid){
 		
-		Asset asset = assetRepository.findOne(assetId);
+		Asset asset = assetRepository.findOneByTenbitId(tenbitId);
 		if (asset == null) {
-			log.addLog(rfid, null, null, "Asset not found for id " + assetId);
+			log.addLog(rfid, null, null, "Asset not found for id " + tenbitId);
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 		
@@ -59,15 +59,15 @@ public class InterlockController {
 	}
 	
 	@RequestMapping(
-			value="/api/interlock/{assetId}/rfids", 
+			value="/api/interlock/{tenbitId}/rfids", 
 			method=RequestMethod.GET, 
 			produces={"application/json"})
 	@ResponseBody
 	@PreAuthorize("hasRole('ROLE_API')")
 	public ResponseEntity<InterlockAccessDTO> getValidRfidsForAsset(
-			@PathVariable long assetId){
+			@PathVariable String tenbitId){
 		
-		Asset asset = assetRepository.findOne(assetId);
+		Asset asset = assetRepository.findOneByTenbitId(tenbitId);
 		if (asset == null) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
@@ -75,7 +75,7 @@ public class InterlockController {
 		InterlockAccessDTO iad = new InterlockAccessDTO();
 		iad.setAccessTimeMS(asset.getAccessControlTimeMS());
 		iad.setTrainingRequired(asset.isTrainingRequired());
-		iad.setAssetId(assetId);
+		iad.setTenbitId(tenbitId);
 		
 		List<String> rfidList = new ArrayList<>();
 		//TODO Look up trainings list for member

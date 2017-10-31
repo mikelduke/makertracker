@@ -45,13 +45,8 @@ public class MemberTrainingController {
 	public List<Member> getMembersForTrainingType(
 			@PathVariable Long id,
 			SecurityContextHolderAwareRequestWrapper security) {
-		System.out.println("ID: " + id); //TODO Remove Sysout
 		List<Member> memberList = new ArrayList<>();
-		
-		System.out.println("trainingTypeRepository: " +trainingTypeRepository); //TODO Remove Sysout
 		TrainingType trainingType = trainingTypeRepository.findOne(id);
-		System.out.println("trainingType: " + trainingType); //TODO Remove Sysout
-		
 		List<MemberTrainings> trainings = memberTrainingRepository.findAllByTrainingType(trainingType);
 		
 		for (MemberTrainings mt : trainings) {

@@ -2,37 +2,18 @@ package org.tenbitworks.interlock;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
+import lombok.Data;
+
+@Data
+@JsonInclude(Include.NON_NULL)
 public class InterlockAccessDTO {
-	private long assetId;
+	private String tenbitId;
 	private List<String> rfidList;
 	
 	private boolean trainingRequired;
 	
 	private long accessTimeMS;
-	
-	public long getAccessTimeMS() {
-		return accessTimeMS;
-	}
-	public void setAccessTimeMS(long accessTime) {
-		this.accessTimeMS = accessTime;
-	}
-	public long getAssetId() {
-		return assetId;
-	}
-	public void setAssetId(long assetId) {
-		this.assetId = assetId;
-	}
-
-	public boolean isTrainingRequired() {
-		return trainingRequired;
-	}
-	public void setTrainingRequired(boolean trainingRequired) {
-		this.trainingRequired = trainingRequired;
-	}
-	public List<String> getRfidList() {
-		return rfidList;
-	}
-	public void setRfidList(List<String> rfid) {
-		this.rfidList = rfid;
-	}
 }
