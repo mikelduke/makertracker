@@ -54,6 +54,8 @@ public class MemberTrainingController {
 			});
 		}
 		
+		trainings.sort((t1, t2) -> t1.getMember().getMemberName().compareTo(t2.getMember().getMemberName()));
+		
 		return trainings;
 	}
 
