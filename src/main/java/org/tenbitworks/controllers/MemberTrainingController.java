@@ -61,7 +61,7 @@ public class MemberTrainingController {
 		if (!security.isUserInRole("ADMIN")) { //Clear out member info for non-admin users
 			List<Member> limitedList = new ArrayList<>();
 			memberList.forEach(member -> {
-				limitedList.add(new Member(member.getMemberName(), ""));
+				limitedList.add(new Member(member.getMemberName(), null));
 			});
 			memberList = limitedList;
 		}

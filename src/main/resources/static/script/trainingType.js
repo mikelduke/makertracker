@@ -138,13 +138,12 @@ function loadMembers(members) {
 				addMemberRow(members[i].id, members[i].memberName)
 			}
 		}
-	} else if ($('#trainedMembersForm').length) {
-		$('#trainedMembersForm').show();
+	} else {
+		$('#memberTableBody').empty();
 		
-		var members = data.memberNames;
 		if (members != null) {
 			for (var i = 0; i < members.length; i++) {
-				var newRow = '<tr><td id="member-' + members[i] + '">' + members[i] + '</td></tr>';
+				var newRow = '<tr><td id="member-' + members[i].memberName + '">' + members[i].memberName + '</td></tr>';
 				
 				$('#memberNameTable').find('tbody').append(newRow);
 			}

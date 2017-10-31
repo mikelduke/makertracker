@@ -16,11 +16,15 @@ import javax.validation.constraints.NotNull;
 
 import org.springframework.format.annotation.NumberFormat;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
 import lombok.Data;
 
 @Entity
 @Table(name = "member")
 @Data
+@JsonInclude(Include.NON_NULL)
 public class Member {
 
 	@Id
