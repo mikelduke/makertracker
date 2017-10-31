@@ -96,12 +96,22 @@ public class MemberTrainingController {
 		
 		TrainingType trainingType = trainingTypeRepository.findOne(id);
 
-		memberTrainingRepository.findAllByTrainingType(trainingType).forEach(memberTrainingRepository::delete);
+		List<MemberTrainings> currentTrainings = memberTrainingRepository.findAllByTrainingType(trainingType);
+		List<UUID> existingIds = new ArrayList<>();
+		for (MemberTrainings mt : currentTrainings) {
+			if (!memberIds.contains(mt.getMember().getId())) {
+				memberTrainingRepository.delete(mt);
+			} else {
+				existingIds.add(mt.getMember().getId());
+			}
+		}
 		
 		List<UUID> uuidsAdded = new ArrayList<>();
 		for (UUID memberId : memberIds) {
-			if (addOneMemberToTraining(trainingType, memberId, security.getUserPrincipal().getName())) {
-				uuidsAdded.add(memberId);
+			if (!existingIds.contains(memberId)) {
+				if (addOneMemberToTraining(trainingType, memberId, security.getUserPrincipal().getName())) {
+					uuidsAdded.add(memberId);
+				}
 			}
 		}
 		

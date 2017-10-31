@@ -5,14 +5,14 @@ $(document).ready(function () {
 		loadTraining(id);
 	}
 	
-	$('#btn_addmember').on("click", function(e) {
+	$('#memberId').on("click", function(e) {
 		e.preventDefault();
 
 		var memberId = $('#memberId').val();
 		
 		if (memberId != '' && !$('#member-row-' + memberId).length) {
 			var memberName = $("#memberId>option:selected").html()
-			addMemberRow(memberId, memberName, '', 'You');
+			addMemberRow(memberId, memberName, '', '');
 		}
 	});
 	

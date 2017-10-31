@@ -76,7 +76,6 @@
 							<div id='div_addMember'>
 								<div th:replace="fragments/memberDropDown :: memberDropDown(false)"></div>
 							</div>
-							<a type="submit" class="btn btn-success" id="btn_addmember">Add Member</a>
 						</div>
 					</div>
  					<div class="form-group well" id="trainedMembersForm" sec:authorize="!hasRole('ROLE_ADMIN')">
