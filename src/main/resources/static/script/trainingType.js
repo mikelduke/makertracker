@@ -53,24 +53,27 @@ $(document).ready(function () {
 				dataType: 'json',
 				timeout: 6000,
 				success: function (data) {
+					var trainedMembers = new Array();
+					
 					$('#memberTable tbody tr').each(function(){
 						var memberId = $(this)[0].id.substring("member-row-".length);
-						
-						$.ajax({
-							headers: { 'X-CSRF-TOKEN': csrf},
-							type: "POST",
-							contentType: "application/json",
-							url: "/trainings/" + data + "/members/" + memberId,
-							data: '',//JSON.stringify(formAr),
-							dataType: 'json',
-							timeout: 6000,
-							success: function (data) {}
-						});
+						trainedMembers.push(memberId);
 					});
-					
-					if (confirm("Training Type with Id " +data + " Saved")){
-						window.location.reload();
-					}
+						
+					$.ajax({
+						headers: { 'X-CSRF-TOKEN': csrf},
+						type: "POST",
+						contentType: "application/json",
+						url: "/trainings/" + data + "/members/",
+						data: JSON.stringify(trainedMembers),
+						dataType: 'json',
+						timeout: 6000,
+						success: function (dataMember) {
+							if (confirm("Training Type with Id " +data + " Saved")){
+								window.location.reload();
+							}
+						}
+					});
 				}
 			});
 		}

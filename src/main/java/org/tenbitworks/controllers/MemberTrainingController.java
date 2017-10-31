@@ -11,6 +11,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestWrapper;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.tenbitworks.model.Member;
@@ -38,7 +39,7 @@ public class MemberTrainingController {
 
 	@RequestMapping(value="/trainings/{id}/members/{memberId}", method=RequestMethod.POST)
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<Long> addTraining( //TODO Add way to add a list of members at once
+	public ResponseEntity<Long> addMemberToTraining( //TODO Add way to add a list of members at once
 			@PathVariable Long id, 
 			@PathVariable UUID memberId,
 			SecurityContextHolderAwareRequestWrapper security) {
@@ -64,5 +65,47 @@ public class MemberTrainingController {
 		memberTraining = memberTrainingRepository.save(memberTraining);
 		
 		return new ResponseEntity<>(memberTraining.getId(), HttpStatus.CREATED);
+	}
+	
+	@RequestMapping(value="/trainings/{id}/members/", method=RequestMethod.POST)
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	public ResponseEntity<Long> setMembersForTraining(
+			@PathVariable Long id, 
+			@RequestBody List<UUID> memberIds,
+			SecurityContextHolderAwareRequestWrapper security) {
+		
+		TrainingType trainingType = trainingTypeRepository.findOne(id);
+
+		memberTrainingRepository.findAllByTrainingType(trainingType).forEach(memberTrainingRepository::delete);
+		
+		for (UUID memberId : memberIds) {
+			addOneMemberToTraining(trainingType, memberId, security.getUserPrincipal().getName());
+		}
+		
+		return new ResponseEntity<>(HttpStatus.CREATED);
+	}
+	
+	private boolean addOneMemberToTraining(TrainingType trainingType, UUID memberId, String addedBy) {
+		Member member = memberRepository.findOne(memberId);
+		if (member == null) {
+			return false;
+		}
+		
+		List<MemberTrainings> trainedInList = memberTrainingRepository.findAllByMember(member);
+		for (MemberTrainings training : trainedInList) {
+			if (training.getTrainingType().equals(trainingType)) {
+				return true;
+			}
+		}
+		
+		MemberTrainings memberTraining = MemberTrainings.builder()
+				.member(member)
+				.trainingType(trainingType)
+				.trainingDate(Calendar.getInstance().getTime())
+				.addedBy(userRepository.findOne(addedBy))
+				.build();
+		memberTraining = memberTrainingRepository.save(memberTraining);
+		
+		return true;
 	}
 }
