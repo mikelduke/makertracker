@@ -1,5 +1,10 @@
 $(document).ready(function () {
 	
+	var id = parseInt($('#id').attr('value'));
+	if (id != undefined && id != null) {
+		loadTraining(id);
+	}
+	
 	$('#btn_addmember').on("click", function(e) {
 		e.preventDefault();
 
@@ -10,16 +15,6 @@ $(document).ready(function () {
 			addMemberRow(memberId, memberName);
 		}
 	});
-	
-	function addMemberRow(memberId, memberName) {
-		var newRow = '<tr id="member-row-' + memberId + '" class="member-row">';
-		newRow += '<td id="member-id-' + memberId + '" style="display:none">' + memberId + '</td>';
-		newRow += '<td id="member-' + memberName + '">' + memberName + '</td>';
-		newRow += '<td id="' + memberId + '"><button class="btn btn-danger remove-member">X</button></td>';
-		newRow += '</tr>';
-		
-		$('#memberTable').find('tbody').append(newRow);
-	}
 	
 	$('#trainedMembersAdminForm').on("click", ".remove-member", function(e){
 		e.preventDefault();
@@ -35,11 +30,6 @@ $(document).ready(function () {
 		var csrf = $("[name='_csrf']").val();
 		
 		formAr["id"] = $('#trainingTypeId').val();
-		
-//		var trainedMembers = new Array();
-//		$('#memberTable tbody tr').each(function(){
-//			trainedMembers.push($(this)[0].id.substring("member-row-".length));
-//		});
 		
 		if($.trim($('#name')) === ""){
 			alert("Name cannot be empty");
@@ -88,7 +78,7 @@ $(document).ready(function () {
 //			$.ajax({
 //				headers: { 'X-CSRF-TOKEN': csrf},
 //				type:"DELETE",
-//				url:"/assets/" + id,
+//				url:"/trainingtypes/" + id,
 //				success:function (data) {
 //					window.location.reload();
 //				}
@@ -96,57 +86,12 @@ $(document).ready(function () {
 //		}
 //	});
 
-//	$('.edit-asset').on("click", function(e){
-//		e.preventDefault();
-//
-//		var id = parseInt($(this).closest("td").attr("id"));
-//		$.ajax({
-//			type:"GET",
-//			headers: { 'accept': 'application/json'},
-//			url:"/assets/" + id,
-//			success:function (data) {
-//				$.each(data, function(key, value) {
-//					$('#' + key).val(data[key]);
-//				});
-//				$('#assetId').val(data.id)
-//				$('#trainingRequired').prop('checked', data.trainingRequired);
-//				
-//				if ($('#trainedMembersAdminForm').length) {
-//					$('#memberTableBody').empty();
-//					
-//					if (data.trainingRequired) {
-//						$('#trainedMembersAdminForm').show();
-//					} else {
-//						$('#trainedMembersAdminForm').hide();
-//					}
-//					
-//					var members = data.members;
-//					if (members != null) {
-//						for (var i = 0; i < members.length; i++) {
-//							addMemberRow(members[i].id, members[i].memberName)
-//						}
-//					}
-//				} else if ($('#trainedMembersForm').length) {
-//					if (data.trainingRequired) {
-//						$('#trainedMembersForm').show();
-//						
-//						var members = data.memberNames;
-//						if (members != null) {
-//							for (var i = 0; i < members.length; i++) {
-//								var newRow = '<tr><td id="member-' + members[i] + '">' + members[i] + '</td></tr>';
-//								
-//								$('#memberNameTable').find('tbody').append(newRow);
-//							}
-//						}
-//					} else {
-//						$('#trainedMembersForm').hide();
-//					}
-//				}
-//
-//				window.history.pushState('Edit Asset ' + data.id, 'MakerTracker', '/assets/' + data.id);
-//			}
-//		});
-//	});
+	$('.edit-asset').on("click", function(e){
+		e.preventDefault();
+
+		var id = parseInt($(this).closest("td").attr("id"));
+		loadTraining(id);
+	});
 
 //	$('.new').on("click", function(e){
 //		e.preventDefault();
@@ -164,6 +109,64 @@ $(document).ready(function () {
 //		}
 //		$('#accessControlTimeMSForm').hide();
 //		
-//		window.history.pushState('Edit Assets', 'MakerTracker', '/assets');
+//		window.history.pushState('Edit Trainings', 'MakerTracker', '/trainingtypes');
 //	});
 });
+
+function loadTraining(id) {
+	$.ajax({
+		type:"GET",
+		headers: { 'accept': 'application/json'},
+		url:"/trainingtypes/" + id,
+		success:function (data) {
+			$.each(data, function(key, value) {
+				$('#' + key).val(data[key]);
+			});
+			
+			window.history.pushState('Edit Asset ' + data.id, 'MakerTracker', '/trainingtypes/' + data.id);
+		}
+	});
+	
+	$.ajax({
+		type:"GET",
+		headers: { 'accept': 'application/json'},
+		url:"/trainings/" + id + "/members/",
+		success:function (data) {
+			loadMembers(data);
+		}
+	});
+}
+
+function loadMembers(members) {
+	if ($('#trainedMembersAdminForm').length) {
+		console.log("clear");
+		$('#memberTableBody').empty();
+		
+		if (members != null) {
+			for (var i = 0; i < members.length; i++) {
+				addMemberRow(members[i].id, members[i].memberName)
+			}
+		}
+	} else if ($('#trainedMembersForm').length) {
+		$('#trainedMembersForm').show();
+		
+		var members = data.memberNames;
+		if (members != null) {
+			for (var i = 0; i < members.length; i++) {
+				var newRow = '<tr><td id="member-' + members[i] + '">' + members[i] + '</td></tr>';
+				
+				$('#memberNameTable').find('tbody').append(newRow);
+			}
+		}
+	}
+}
+
+function addMemberRow(memberId, memberName) {
+	var newRow = '<tr id="member-row-' + memberId + '" class="member-row">';
+	newRow += '<td id="member-id-' + memberId + '" style="display:none">' + memberId + '</td>';
+	newRow += '<td id="member-' + memberName + '">' + memberName + '</td>';
+	newRow += '<td id="' + memberId + '"><button class="btn btn-danger remove-member">X</button></td>';
+	newRow += '</tr>';
+	
+	$('#memberTable').find('tbody').append(newRow);
+}

@@ -31,6 +31,7 @@ public class TrainingTypeController {
 	@RequestMapping(value="/trainingtypes/{id}", method=RequestMethod.GET)
 	@PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
 	public String getTrainingType(@PathVariable Long id, Model model){
+		model.addAttribute("trainingType", trainingTypeRepository.findOne(id));
 		model.addAttribute("trainingTypes", trainingTypeRepository.findAll());
 		model.addAttribute("members", memberRepository.findAll());
 		

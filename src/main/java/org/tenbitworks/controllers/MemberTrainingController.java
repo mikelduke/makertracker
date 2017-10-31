@@ -1,5 +1,6 @@
 package org.tenbitworks.controllers;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.UUID;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.tenbitworks.model.Member;
 import org.tenbitworks.model.MemberTrainings;
 import org.tenbitworks.model.TrainingType;
@@ -36,10 +38,40 @@ public class MemberTrainingController {
 	
 	@Autowired
 	MemberTrainingsRepository memberTrainingRepository;
+	
+	@RequestMapping(value="/trainings/{id}/members/", method=RequestMethod.GET)
+	@ResponseBody
+	@PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+	public List<Member> getMembersForTrainingType(
+			@PathVariable Long id,
+			SecurityContextHolderAwareRequestWrapper security) {
+		System.out.println("ID: " + id); //TODO Remove Sysout
+		List<Member> memberList = new ArrayList<>();
+		
+		System.out.println("trainingTypeRepository: " +trainingTypeRepository); //TODO Remove Sysout
+		TrainingType trainingType = trainingTypeRepository.findOne(id);
+		System.out.println("trainingType: " + trainingType); //TODO Remove Sysout
+		
+		List<MemberTrainings> trainings = memberTrainingRepository.findAllByTrainingType(trainingType);
+		
+		for (MemberTrainings mt : trainings) {
+			memberList.add(mt.getMember());
+		}
+		
+		if (!security.isUserInRole("ADMIN")) { //Clear out member info for non-admin users
+			List<Member> limitedList = new ArrayList<>();
+			memberList.forEach(member -> {
+				limitedList.add(new Member(member.getMemberName(), ""));
+			});
+			memberList = limitedList;
+		}
+		
+		return memberList;
+	}
 
 	@RequestMapping(value="/trainings/{id}/members/{memberId}", method=RequestMethod.POST)
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<Long> addMemberToTraining( //TODO Add way to add a list of members at once
+	public ResponseEntity<Long> addMemberToTraining(
 			@PathVariable Long id, 
 			@PathVariable UUID memberId,
 			SecurityContextHolderAwareRequestWrapper security) {
