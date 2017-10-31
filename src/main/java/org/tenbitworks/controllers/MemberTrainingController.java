@@ -101,7 +101,7 @@ public class MemberTrainingController {
 	
 	@RequestMapping(value="/trainings/{id}/members/", method=RequestMethod.POST)
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<Long> setMembersForTraining(
+	public ResponseEntity<List<UUID>> setMembersForTraining(
 			@PathVariable Long id, 
 			@RequestBody List<UUID> memberIds,
 			SecurityContextHolderAwareRequestWrapper security) {
@@ -110,11 +110,14 @@ public class MemberTrainingController {
 
 		memberTrainingRepository.findAllByTrainingType(trainingType).forEach(memberTrainingRepository::delete);
 		
+		List<UUID> uuidsAdded = new ArrayList<>();
 		for (UUID memberId : memberIds) {
-			addOneMemberToTraining(trainingType, memberId, security.getUserPrincipal().getName());
+			if (addOneMemberToTraining(trainingType, memberId, security.getUserPrincipal().getName())) {
+				uuidsAdded.add(memberId);
+			}
 		}
 		
-		return new ResponseEntity<>(HttpStatus.CREATED);
+		return new ResponseEntity<>(uuidsAdded, HttpStatus.CREATED);
 	}
 	
 	private boolean addOneMemberToTraining(TrainingType trainingType, UUID memberId, String addedBy) {

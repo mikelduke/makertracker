@@ -29,7 +29,7 @@ $(document).ready(function () {
 		var formAr = formToObject($('#form'));
 		var csrf = $("[name='_csrf']").val();
 		
-		formAr["id"] = $('#trainingTypeId').val();
+		formAr["id"] = $('#id').val();
 		
 		if($.trim($('#name')) === ""){
 			alert("Name cannot be empty");
@@ -49,7 +49,7 @@ $(document).ready(function () {
 						var memberId = $(this)[0].id.substring("member-row-".length);
 						trainedMembers.push(memberId);
 					});
-						
+					
 					$.ajax({
 						headers: { 'X-CSRF-TOKEN': csrf},
 						type: "POST",
