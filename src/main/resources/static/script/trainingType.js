@@ -93,24 +93,16 @@ $(document).ready(function () {
 		loadTraining(id);
 	});
 
-//	$('.new').on("click", function(e){
-//		e.preventDefault();
-//		resetForm($('#form'));
-//		
-//		$('#dateAcquired').val('');
-//		$('#webLink').val('');
-//		$('#dateRemoved').val('');
-//		$('#trainingRequired').prop('checked', false);
-//		$('#accessControlTimeMS').val('');
-//		
-//		if ($('#trainedMembersAdminForm').length) {
-//			$('#memberTableBody').empty();
-//			$('#trainedMembersAdminForm').hide();
-//		}
-//		$('#accessControlTimeMSForm').hide();
-//		
-//		window.history.pushState('Edit Trainings', 'MakerTracker', '/trainingtypes');
-//	});
+	$('.new-training').on("click", function(e){
+		e.preventDefault();
+		resetForm($('#form'));
+		
+		if ($('#trainedMembersAdminForm').length) {
+			$('#memberTableBody').empty();
+		}
+		
+		window.history.pushState('Edit Trainings', 'MakerTracker', '/trainingtypes');
+	});
 });
 
 function loadTraining(id) {
