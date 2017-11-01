@@ -79,7 +79,6 @@ public class MemberController {
 		
 		Member member = memberRepository.findOne(id);
 		model.addAttribute("member", member);
-//		model.addAttribute("asset", assetRepository.findAllByMembers(member)); //TODO Find assets for member
 		
 		return "members";
 	}

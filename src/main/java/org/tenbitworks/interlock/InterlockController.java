@@ -14,8 +14,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.tenbitworks.model.Asset;
 import org.tenbitworks.model.Member;
+import org.tenbitworks.model.MemberTrainings;
 import org.tenbitworks.repositories.AssetRepository;
 import org.tenbitworks.repositories.MemberRepository;
+import org.tenbitworks.repositories.MemberTrainingsRepository;
+import org.tenbitworks.repositories.TrainingTypeRepository;
 
 @Controller
 public class InterlockController {
@@ -26,6 +29,12 @@ public class InterlockController {
 	MemberRepository memberRepository;
 	
 	@Autowired
+	TrainingTypeRepository trainingTypeRepository;
+	
+	@Autowired
+	MemberTrainingsRepository memberTrainingRepository;
+	
+	@Autowired
 	InterlockLogController log;
 	
 	@RequestMapping(
@@ -33,7 +42,7 @@ public class InterlockController {
 			method=RequestMethod.GET)
 	@ResponseBody
 	@PreAuthorize("hasRole('ROLE_API')")
-	public ResponseEntity<Long> checkAccessToAsset( //TODO Change to use 10bit friendly id
+	public ResponseEntity<Long> checkAccessToAsset(
 			@PathVariable String tenbitId, 
 			@PathVariable String rfid){
 		
@@ -78,30 +87,29 @@ public class InterlockController {
 		iad.setTenbitId(tenbitId);
 		
 		List<String> rfidList = new ArrayList<>();
-		//TODO Look up trainings list for member
-//		if (asset.isTrainingRequired()) {
-//			for (Member m : asset.getTrainingType().getMembers()) {
-//				rfidList.add(m.getRfid());
-//			}
-//		} else {
-//			for (Member m : memberRepository.findAll()) {
-//				rfidList.add(m.getRfid());
-//			}
-//		}
-		
+		if (asset.isTrainingRequired()) {
+			memberTrainingRepository.findAllByTrainingType(asset.getTrainingType())
+					.forEach(mt -> rfidList.add(mt.getMember().getRfid()));
+		} else {
+			memberRepository.findAll().forEach(m -> rfidList.add(m.getRfid()));
+		}
+
 		iad.setRfidList(rfidList);
 		
 		return new ResponseEntity<>(iad, HttpStatus.OK);
 	}
 	
-	private static boolean checkAccess(Asset asset, Member member) {
-		//TODO Check new trainings list
-//		if (asset.isTrainingRequired() && asset.getTrainingType().getMembers().contains(member)) {
-//			return true;
-//		} else if (!asset.isTrainingRequired()) {
+	private boolean checkAccess(Asset asset, Member member) {
+		if (asset.isTrainingRequired()) {
+			List<MemberTrainings> mtList = memberTrainingRepository.findAllByTrainingType(asset.getTrainingType());
+			for (MemberTrainings mt : mtList) {
+				if (mt.getMember().equals(member)) {
+					return true;
+				}
+			}
+			return false;
+		} else {
 			return true;
-//		} else {
-//			return false;
-//		}
+		}
 	}
 }
