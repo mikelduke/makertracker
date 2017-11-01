@@ -126,6 +126,9 @@ $(document).ready(function () {
 				
 				if (data.trainingRequired) {
 					$('#trainingTypeForm').show();
+					if (data.trainingType) {
+						$('#trainingType option[value="' + data.trainingType.id + '"]').prop('selected', true);
+					}
 				} else {
 					$('#trainingTypeForm').hide();
 				}
