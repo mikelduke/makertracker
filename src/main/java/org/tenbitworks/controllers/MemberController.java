@@ -1,6 +1,7 @@
 package org.tenbitworks.controllers;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 import javax.validation.Valid;
@@ -21,8 +22,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.tenbitworks.dto.UpdateMemberDTO;
 import org.tenbitworks.model.Member;
+import org.tenbitworks.model.MemberTrainings;
 import org.tenbitworks.repositories.AssetRepository;
 import org.tenbitworks.repositories.MemberRepository;
+import org.tenbitworks.repositories.MemberTrainingsRepository;
 import org.tenbitworks.repositories.UserRepository;
 
 @Controller
@@ -36,6 +39,9 @@ public class MemberController {
 	
 	@Autowired
 	AssetRepository assetRepository;
+	
+	@Autowired
+	MemberTrainingsRepository memberTrainingRepository;
 
 	@RequestMapping(value="/members/{id}", method = RequestMethod.GET, produces = { "application/json" })
 	@ResponseBody
@@ -136,5 +142,28 @@ public class MemberController {
 	public String removeMember(@PathVariable UUID id){
 		memberRepository.delete(id);
 		return id.toString();
+	}
+	
+	@RequestMapping(value="/members/{id}/trainings", method=RequestMethod.GET)
+	@ResponseBody
+	@PreAuthorize("hasRole('ADMIN') or hasPermission(#id, 'Member', 'read')")
+	public ResponseEntity<List<MemberTrainings>> getTrainingsForMember(
+			@PathVariable UUID id,
+			SecurityContextHolderAwareRequestWrapper security) {
+		Member member = memberRepository.findOne(id);
+
+		if (member == null) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+		
+		List<MemberTrainings> trainings = memberTrainingRepository.findAllByMember(member);
+		
+		trainings.forEach(mt -> {
+			mt.setMember(null);
+		});
+		
+		trainings.sort((t1, t2) -> t1.getTrainingType().getName().compareTo(t2.getTrainingType().getName()));
+		
+		return new ResponseEntity<>(trainings, HttpStatus.OK);
 	}
 }

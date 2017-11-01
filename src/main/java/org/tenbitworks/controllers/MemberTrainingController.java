@@ -58,7 +58,7 @@ public class MemberTrainingController {
 		
 		return trainings;
 	}
-
+	
 	@RequestMapping(value="/trainings/{id}/members/{memberId}", method=RequestMethod.POST)
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<Long> addMemberToTraining(

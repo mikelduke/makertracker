@@ -1,4 +1,8 @@
 $(document).ready(function () {
+	var id = $('#member_id').val();
+	if (id) {
+		loadTrainings(id);
+	}
 
 	$('#btn_adminEditMember').on("click",function (e) {
 		e.preventDefault();
@@ -96,6 +100,7 @@ $(document).ready(function () {
 				$('#username').val(data.user != null ? data.user.username : '');
 
 				window.history.pushState('Edit Member ' + data.memberName, 'MakerTracker', '/members/' + data.id);
+				loadTrainings(id);
 			}
 		});
 	});
@@ -106,3 +111,25 @@ $(document).ready(function () {
 		window.history.pushState('Edit Member', 'MakerTracker', '/members');
 	});
 });
+
+function loadTrainings(memberId) {
+	$.ajax({
+		type:"GET",
+		headers: { 'accept': 'application/json'},
+		url:"/members/" + memberId + "/trainings/",
+		success:function (data) {
+			$('#trainingTableBody').empty();
+			
+			if (data != null) {
+				for (var i = 0; i < data.length; i++) {
+					var newRow = '<tr>'
+							+ '<td style="display:none" id="training-' + data[i].id + '">' + data[i].id +'</td>'
+							+ '<td><a href="/trainingtypes/'+ data[i].trainingType.id + '">' + data[i].trainingType.name + '</a></td>'
+							+ '<td>' + new Date(data[i].trainingDate).toLocaleString() + '</td></tr>';
+					
+					$('#trainingTableBody').append(newRow);
+				}
+			}
+		}
+	});
+}

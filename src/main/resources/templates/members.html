@@ -31,6 +31,24 @@
 					</table>
 				</div>
 			</div>
+			<div class="well col-lg-8 col-md-7 col-sm-6" id="trainedAssetList">
+				<h4>Completed Training Classes</h4>
+				<table class="table table-striped table-hover" id='trainingTable'>
+					<thead>
+					<tr>
+						<th>Class</th>
+						<th>Date</th>
+					</tr>
+					</thead>
+					<tbody id='trainingTableBody'>
+					<tr>
+						<td style='display:none'></td>
+						<td></td>
+						<td></td>
+					</tr>
+					</tbody>
+				</table>
+			</div>
 			<div class="col-lg-8 col-md-7 col-sm-6">
 				<form id="form">
 					<div id="adminForm" sec:authorize="hasRole('ROLE_ADMIN')">
@@ -106,9 +124,6 @@
 							<li class="list-group-item"><b>Status: </b><span th:inline="text" name="status" id="status">[[${member?.status?.text}]]</span></li>
 							<li class="list-group-item"><b>Payment Method: </b><span th:inline="text" name="paymentMethod" id="paymentMethod">[[${member?.paymentMethod?.text}]]</span></li>
 						</ul>
-						<div class="well" id="trainedAssetList">
-							
-						</div>
 						<div class="well">
 							<div class="form-group">
 								<label for="description">Description:</label>
