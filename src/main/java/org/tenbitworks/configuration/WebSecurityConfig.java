@@ -83,6 +83,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 			service.withUser("user").password(passwordEncoder.encode("user")).roles("USER");
 			service.withUser("admin").password(passwordEncoder.encode("admin")).roles("USER", "ADMIN", "API", "ACTUATOR");
+			service.withUser("api").password(passwordEncoder.encode("api")).roles("API");
    		} else {
    			LOGGER.info("Users found");
    		}
