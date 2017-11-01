@@ -34,7 +34,7 @@
 						<span th:id="${newsItem.id + '-date'}" th:inline="text"><small>[[${newsItem.createdAt}]] by [[${newsItem.user?.username}]]</small></span>
 						<pre th:id="${newsItem.id + '-content'}" th:inline="text" class="well well-sm" style='font-family: inherit;'>[[${newsItem.content}]]</pre>
 						<div sec:authorize="hasRole('ROLE_ADMIN')">
-							<a href="#" class="btn-small edit-news-item">Edit</a>
+<!-- 							<a href="#" class="btn-small edit-news-item">Edit</a> -->
 							<a href="#" class="btn-small btn-danger delete-news-item">Delete</a>
 						</div>
 					</div>
