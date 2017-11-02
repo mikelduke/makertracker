@@ -11,7 +11,7 @@
 					<table class="table table-striped table-hover">
 						<thead>
 						<tr>
-							<th>Id</th>
+							<th style='display:none'>Id</th>
 							<th>Training Name</th>
 							<th>Description</th>
 							<th sec:authorize="hasRole('ROLE_ADMIN')">Delete</th>
@@ -20,14 +20,13 @@
 						<tbody>
 
 						<tr th:each="trainingType : ${trainingTypes}">
-							<td th:id="${trainingType.id}" th:inline="text"><a class="edit-training">[[${trainingType.id}]]</a></td>
-							<td th:text="${trainingType.name}"></td>
+							<td th:id="${trainingType.id}" th:inline="text" style='display:none'>[[${trainingType.id}]]</td>
+							<td th:id="${trainingType.id}" th:inline="text"><a class="edit-training">[[${trainingType.name}]]</a></td>
 							<td th:text="${trainingType.description}"></td>
 							<td sec:authorize="hasRole('ROLE_ADMIN')" th:id="${trainingType.id}"><a class="btn btn-danger delete-training">Delete</a></td>
 						</tr>
 						
 						<tr sec:authorize="hasRole('ROLE_ADMIN')">
-							<td></td>
 							<td></td>
 							<td></td>
 							<td><a class="btn btn-primary new-training">New</a></td>
