@@ -4,6 +4,7 @@ public enum Roles {
 	USER("User"),
 	ADMIN("Admin"),
 	API("Api"),
+	TEACHER("Teacher"),
 	ACTUATOR("Metrics");
 	
 	private final String text;

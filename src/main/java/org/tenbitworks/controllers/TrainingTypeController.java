@@ -160,7 +160,7 @@ public class TrainingTypeController {
 			for (TrainingTeacher teacher : teacherList) {
 				teacher.setMember(new Member(teacher.getMember().getMemberName(), null));
 				teacher.setAddedBy(null);
-			}
+			} //TODO MAke teachers able to edit trained users
 		}
 		
 		return teacherList;
