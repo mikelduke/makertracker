@@ -90,7 +90,7 @@ public class MemberTrainingController {
 	}
 	
 	@RequestMapping(value="/trainings/{id}/members/", method=RequestMethod.POST)
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('ROLE_ADMIN')") //TODO Add or haspermission to add members to training for teachers
 	public ResponseEntity<List<UUID>> setMembersForTraining(
 			@PathVariable Long id, 
 			@RequestBody List<UUID> memberIds,

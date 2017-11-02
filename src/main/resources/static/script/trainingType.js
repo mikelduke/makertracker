@@ -11,8 +11,18 @@ $(document).ready(function () {
 		var memberId = $('#memberId').val();
 		
 		if (memberId != '' && !$('#member-row-' + memberId).length) {
-			var memberName = $("#memberId>option:selected").html()
+			var memberName = $("#memberId>option:selected").html();
 			addMemberRow(memberId, memberName, '', '');
+		}
+	});
+	
+	$('#teacherMemberId').on("click", function(e) {
+		e.preventDefault();
+
+		var memberId = $('#teacherMemberId').val();
+		if (memberId != '' && !$('#teacher-row-' + memberId).length) {
+			var memberName = $("#teacherMemberId>option:selected").html();
+			addTeacherRow(memberId, memberName, '', '');
 		}
 	});
 	
@@ -52,12 +62,34 @@ $(document).ready(function () {
 						}
 					});
 					
+					var teachers = new Array();
+					
+					$('#teacherTable tbody tr').each(function(){
+						var memberId = $(this)[0].id.substring("teacher-row-".length);
+						if (memberId.length > 0) {
+							teachers.push(memberId);
+						}
+					});
+					
 					$.ajax({
 						headers: { 'X-CSRF-TOKEN': csrf},
 						type: "POST",
 						contentType: "application/json",
 						url: "/trainings/" + data + "/members/",
 						data: JSON.stringify(trainedMembers),
+						dataType: 'json',
+						timeout: 6000,
+						success: function (dataMember) {
+							console.log("Members saved for training");
+						}
+					});
+					
+					$.ajax({
+						headers: { 'X-CSRF-TOKEN': csrf},
+						type: "POST",
+						contentType: "application/json",
+						url: "/trainingtypes/" + data + "/teachers/",
+						data: JSON.stringify(teachers),
 						dataType: 'json',
 						timeout: 6000,
 						success: function (dataMember) {
@@ -129,6 +161,15 @@ function loadTraining(id) {
 			loadMembers(data);
 		}
 	});
+	
+	$.ajax({
+		type:"GET",
+		headers: { 'accept': 'application/json'},
+		url:"/trainingtypes/" + id + "/teachers/",
+		success:function (data) {
+			loadTeachers(data);
+		}
+	});
 }
 
 function loadMembers(members) {
@@ -169,4 +210,44 @@ function addMemberRow(memberId, memberName, trainingDate, addedBy) {
 	newRow += '</tr>';
 	
 	$('#memberTable').find('tbody').append(newRow);
+}
+
+function loadTeachers(teacher) {
+	if ($('#teachersForm').length) {
+		$('#teacherTableBody').empty();
+		
+		if (teacher != null) {
+			for (var i = 0; i < teacher.length; i++) {
+				addTeacherRow(teacher[i].member.id, teacher[i].member.memberName, teacher[i].addedDate, teacher[i].addedBy.username);
+			}
+		}
+	} else {
+		$('#teacherTableBody').empty();
+		
+		if (teacher != null) {
+			for (var i = 0; i < teacher.length; i++) {
+				var newRow = '<tr><td id="teacher-' + teacher[i].member.memberName + '">' + teacher[i].member.memberName + '</td></tr>';
+				
+				$('#teacherNameTable').find('tbody').append(newRow);
+			}
+		}
+	}
+}
+
+function addTeacherRow(memberId, memberName, trainingDate, addedBy) {
+	var date = '';
+	
+	if (trainingDate != '' && trainingDate != null) {
+		date = new Date(trainingDate).toLocaleString();
+	}
+	
+	var newRow = '<tr id="teacher-row-' + memberId + '" class="teacher-row">';
+	newRow += '<td id="teacher-id-' + memberId + '" style="display:none">' + memberId + '</td>';
+	newRow += '<td id="teacher-' + memberName + '">' + memberName + '</td>';
+	newRow += '<td>' + date + '</td>';
+	newRow += '<td>' + addedBy + '</td>';
+	newRow += '<td id="' + memberId + '"><button class="btn btn-danger remove-teacher">X</button></td>';
+	newRow += '</tr>';
+	
+	$('#teacherTable').find('tbody').append(newRow);
 }

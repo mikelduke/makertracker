@@ -1,6 +1,13 @@
 package org.tenbitworks.controllers;
 
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestWrapper;
@@ -11,11 +18,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.tenbitworks.model.Member;
+import org.tenbitworks.model.TrainingTeacher;
 import org.tenbitworks.model.TrainingType;
 import org.tenbitworks.repositories.AssetRepository;
 import org.tenbitworks.repositories.MemberRepository;
 import org.tenbitworks.repositories.MemberTrainingsRepository;
+import org.tenbitworks.repositories.TrainingTeacherRepository;
 import org.tenbitworks.repositories.TrainingTypeRepository;
+import org.tenbitworks.repositories.UserRepository;
 
 @Controller
 public class TrainingTypeController {
@@ -31,6 +42,12 @@ public class TrainingTypeController {
 	
 	@Autowired
 	MemberTrainingsRepository memberTrainingRepository;
+	
+	@Autowired
+	TrainingTeacherRepository trainingTeacherRepository;
+	
+	@Autowired
+	UserRepository userRepository;
 
 	@RequestMapping(value="/trainingtypes/{id}", method=RequestMethod.GET)
 	@PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
@@ -75,5 +92,132 @@ public class TrainingTypeController {
 		memberTrainingRepository.findAllByTrainingType(trainingType).forEach(memberTrainingRepository::delete);
 		trainingTypeRepository.delete(id);
 		return id.toString();
+	}
+	
+	@RequestMapping(value = "/trainingtypes/{id}/teachers/{memberId}", method = RequestMethod.POST)
+	@ResponseBody
+	@PreAuthorize("hasRole('ADMIN')")
+	public Long addTeacherToTrainingType(
+			@PathVariable Long id, 
+			@PathVariable UUID memberId,
+			SecurityContextHolderAwareRequestWrapper security) {
+		
+		TrainingType tType = trainingTypeRepository.findOne(id);
+		
+		List<TrainingTeacher> teacherList = trainingTeacherRepository.findAllByTrainingType(tType);
+		for (TrainingTeacher teacher : teacherList) {
+			if (teacher.getMember().getId().equals(memberId)) {
+				return 0L;
+			}
+		}
+			
+		TrainingTeacher tt = TrainingTeacher.builder()
+				.member(memberRepository.findOne(memberId))
+				.trainingType(tType)
+				.addedDate(Calendar.getInstance().getTime())
+				.addedBy(userRepository.findOne(security.getUserPrincipal().getName()))
+				.build();
+		
+		tt = trainingTeacherRepository.save(tt);
+		
+		return tt.getId();
+	}
+	
+	@RequestMapping(value = "/trainingtypes/{id}/teachers/{memberId}", method = RequestMethod.DELETE)
+	@ResponseBody
+	@PreAuthorize("hasRole('ADMIN')")
+	public String removeTeacherFromTrainingType(
+			@PathVariable Long id, 
+			@PathVariable UUID memberId,
+			SecurityContextHolderAwareRequestWrapper security) {
+		
+		TrainingType tType = trainingTypeRepository.findOne(id);
+		
+		List<TrainingTeacher> teacherList = trainingTeacherRepository.findAllByTrainingType(tType);
+		for (TrainingTeacher teacher : teacherList) {
+			if (teacher.getMember().getId().equals(memberId)) {
+				trainingTeacherRepository.delete(teacher);
+				
+				return memberId.toString();
+			}
+		}
+		
+		return null;
+	}
+	
+	@RequestMapping(value = "/trainingtypes/{id}/teachers/", method = RequestMethod.GET)
+	@ResponseBody
+	@PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+	public List<TrainingTeacher> getTeachersForTrainingType(
+			@PathVariable Long id, 
+			SecurityContextHolderAwareRequestWrapper security) {
+		
+		TrainingType tType = trainingTypeRepository.findOne(id);
+
+		List<TrainingTeacher> teacherList = trainingTeacherRepository.findAllByTrainingType(tType);
+		
+		if (!security.isUserInRole("ADMIN")) {
+			for (TrainingTeacher teacher : teacherList) {
+				teacher.setMember(new Member(teacher.getMember().getMemberName(), null));
+			}
+		}
+		
+		return teacherList;
+	}
+	
+	@RequestMapping(value="/trainingtypes/{id}/teachers/", method=RequestMethod.POST)
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	public ResponseEntity<List<UUID>> setTeachersForTraining(
+			@PathVariable Long id, 
+			@RequestBody List<UUID> memberIds,
+			SecurityContextHolderAwareRequestWrapper security) {
+		
+		TrainingType trainingType = trainingTypeRepository.findOne(id);
+
+		List<TrainingTeacher> currentTrainings = trainingTeacherRepository.findAllByTrainingType(trainingType);
+		List<UUID> existingIds = new ArrayList<>();
+		for (TrainingTeacher tt : currentTrainings) {
+			if (!memberIds.contains(tt.getMember().getId())) {
+				trainingTeacherRepository.delete(tt);
+			} else {
+				existingIds.add(tt.getMember().getId());
+			}
+		}
+		
+		List<UUID> uuidsAdded = new ArrayList<>();
+		for (UUID memberId : memberIds) {
+			if (!existingIds.contains(memberId)) {
+				if (addOneTeacherToTraining(trainingType, memberId, security.getUserPrincipal().getName())) {
+					uuidsAdded.add(memberId);
+				}
+			}
+		}
+		
+		return new ResponseEntity<>(uuidsAdded, HttpStatus.CREATED);
+	}
+	
+	private boolean addOneTeacherToTraining(TrainingType trainingType, UUID memberId, String addedBy) {
+		
+		Member member = memberRepository.findOne(memberId);
+		if (member == null) {
+			return false;
+		}
+		
+		List<TrainingTeacher> trainedInList = trainingTeacherRepository.findAllByTrainingType(trainingType);
+		for (TrainingTeacher training : trainedInList) {
+			if (training.getMember().getId().equals(memberId)) {
+				return true;
+			}
+		}
+
+		TrainingTeacher trainingTeacher = TrainingTeacher.builder()
+				.member(member)
+				.trainingType(trainingType)
+				.addedDate(Calendar.getInstance().getTime())
+				.addedBy(userRepository.findOne(addedBy))
+				.build();
+		trainingTeacher = trainingTeacherRepository.save(trainingTeacher);
+
+		return true;
 	}
 }
