@@ -159,6 +159,7 @@ public class TrainingTypeController {
 		if (!security.isUserInRole("ADMIN")) {
 			for (TrainingTeacher teacher : teacherList) {
 				teacher.setMember(new Member(teacher.getMember().getMemberName(), null));
+				teacher.setAddedBy(null);
 			}
 		}
 		
