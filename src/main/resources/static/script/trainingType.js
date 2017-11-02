@@ -33,6 +33,13 @@ $(document).ready(function () {
 		$('#member-row-' + id).remove();
 	});
 	
+	$('#teachersForm').on("click", ".remove-teacher", function(e){
+		e.preventDefault();
+		
+		var id = $(this).closest("td").attr("id");
+		$('#teacher-row-' + id).remove();
+	});
+	
 	$('#btn_submit').on("click",function (e) {
 		e.preventDefault();
 		
