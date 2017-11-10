@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.tenbitworks.model.Asset;
 import org.tenbitworks.model.Member;
+import org.tenbitworks.model.MemberStatus;
 import org.tenbitworks.model.MemberTrainings;
 import org.tenbitworks.repositories.AssetRepository;
 import org.tenbitworks.repositories.MemberRepository;
@@ -89,7 +90,11 @@ public class InterlockController {
 		List<String> rfidList = new ArrayList<>();
 		if (asset.isTrainingRequired()) {
 			memberTrainingRepository.findAllByTrainingType(asset.getTrainingType())
-					.forEach(mt -> rfidList.add(mt.getMember().getRfid()));
+					.forEach(mt -> {
+						if (isActive(mt.getMember())) {
+							rfidList.add(mt.getMember().getRfid());
+						}
+					});
 		} else {
 			memberRepository.findAll().forEach(m -> rfidList.add(m.getRfid()));
 		}
@@ -103,7 +108,7 @@ public class InterlockController {
 		if (asset.isTrainingRequired()) {
 			List<MemberTrainings> mtList = memberTrainingRepository.findAllByTrainingType(asset.getTrainingType());
 			for (MemberTrainings mt : mtList) {
-				if (mt.getMember().equals(member)) {
+				if (mt.getMember().equals(member) && isActive(member)) {
 					return true;
 				}
 			}
@@ -111,5 +116,15 @@ public class InterlockController {
 		} else {
 			return true;
 		}
+	}
+
+	private boolean isActive(Member member) {
+		if (MemberStatus.MEMBER.equals(member.getStatus())) {
+			return true;
+		} else if (MemberStatus.OFFICER.equals(member.getStatus())) {
+			return true;
+		}
+		
+		return false;
 	}
 }
