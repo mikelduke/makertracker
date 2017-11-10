@@ -2,6 +2,8 @@ package org.tenbitworks;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Iterator;
 import java.util.Random;
 import java.util.logging.Logger;
 
@@ -19,11 +21,13 @@ import org.tenbitworks.model.Asset;
 import org.tenbitworks.model.AssetStatus;
 import org.tenbitworks.model.Member;
 import org.tenbitworks.model.MemberStatus;
+import org.tenbitworks.model.MemberTrainings;
 import org.tenbitworks.model.PaymentMethod;
 import org.tenbitworks.model.Roles;
 import org.tenbitworks.model.TrainingType;
 import org.tenbitworks.repositories.AssetRepository;
 import org.tenbitworks.repositories.MemberRepository;
+import org.tenbitworks.repositories.MemberTrainingsRepository;
 import org.tenbitworks.repositories.TrainingTypeRepository;
 import org.tenbitworks.repositories.UserRepository;
 
@@ -52,6 +56,9 @@ public class MakerTrackerTestDataGenerator {
 	
 	@Autowired
 	TrainingTypeRepository trainingTypeRepo;
+	
+	@Autowired
+	MemberTrainingsRepository memberTrainingRepo;
 	
 	@Autowired
 	PasswordEncoder passwordEncoder;
@@ -152,7 +159,6 @@ public class MakerTrackerTestDataGenerator {
 				for (int i = 0; i < testDataCount; i++) {
 					LOGGER.info("Adding Training Type " + i);
 					TrainingType tt = new TrainingType();
-					tt.setId(i);
 					tt.setName("TrainingType" + i);
 					tt.setDescription("Training Description " + i);
 					trainingTypeRepo.save(tt);
@@ -161,6 +167,35 @@ public class MakerTrackerTestDataGenerator {
 			
 			LOGGER.info("TrainingTypes found:");
 			trainingTypeRepo.findAll().forEach(trainingType -> LOGGER.info(trainingType.toString()));
+			LOGGER.info("-------------------------------");
+		};
+	}
+	
+	@Bean
+	@Order(5)
+	public CommandLineRunner generateMemberTrainingData() {
+		return (args) -> {
+			if (generateTestData && memberTrainingRepo.count() == 0) {
+				LOGGER.info("Generating some MemberTrainings");
+				
+				Iterator<Member> memberIt = memberRepo.findAll().iterator();
+				TrainingType trainingType = trainingTypeRepo.findAll().iterator().next();
+				org.tenbitworks.model.User user = userRepo.findOne("admin");
+
+				while (memberIt.hasNext()) {
+					Member member = memberIt.next();
+					LOGGER.info("Adding Member " + member.getMemberName() + " to Training Type " + trainingType.getId());
+					MemberTrainings mt = new MemberTrainings();
+					mt.setAddedBy(user);
+					mt.setTrainingDate(Calendar.getInstance().getTime());
+					mt.setTrainingType(trainingType);
+					mt.setMember(member);
+					memberTrainingRepo.save(mt);
+				}
+			}
+			
+			LOGGER.info("Trainings found:");
+			memberTrainingRepo.findAll().forEach(training -> LOGGER.info(training.toString()));
 			LOGGER.info("-------------------------------");
 		};
 	}
