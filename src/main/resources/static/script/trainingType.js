@@ -163,6 +163,15 @@ function loadTraining(id) {
 	$.ajax({
 		type:"GET",
 		headers: { 'accept': 'application/json'},
+		url:"/trainingtypes/" + id + "/assets/",
+		success:function (data) {
+			loadAssets(data);
+		}
+	});
+	
+	$.ajax({
+		type:"GET",
+		headers: { 'accept': 'application/json'},
 		url:"/trainings/" + id + "/members/",
 		success:function (data) {
 			loadMembers(data);
@@ -257,4 +266,19 @@ function addTeacherRow(memberId, memberName, trainingDate, addedBy) {
 	newRow += '</tr>';
 	
 	$('#teacherTable').find('tbody').append(newRow);
+}
+
+function loadAssets(assets) {
+	$('#assetsTableBody').empty();
+	
+	if (assets != null) {
+		for (var i = 0; i < assets.length; i++) {
+			var newRow = '<tr>' + 
+					'<td id="assets-' + assets[i].tenbitId + '">' + assets[i].tenbitId + '</td>' +
+					'<td>' + assets[i].title + '</td>' +
+					'</tr>';
+//			$('#assets').find('tbody').append(newRow);
+			$('#assetsTableBody').append(newRow);
+		}
+	}
 }
