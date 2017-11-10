@@ -5,7 +5,6 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestWrapper;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -44,8 +43,15 @@ public class AssetController {
     @RequestMapping(value="/assets/{id}", method=RequestMethod.GET, produces={"application/json"})
     @ResponseBody
     @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
-    public Asset getAssetJson(@PathVariable Long id, Model model, SecurityContextHolderAwareRequestWrapper security){
+    public Asset getAssetJson(@PathVariable Long id){
         return assetRepository.findOne(id);
+    }
+    
+    @RequestMapping(value="/assets", method=RequestMethod.GET, produces={"application/json"})
+    @ResponseBody
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
+    public Iterable<Asset> getAllAssetsJson() {
+        return assetRepository.findAll();
     }
 
     @RequestMapping(value = "/assets",method = RequestMethod.GET)

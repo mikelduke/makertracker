@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.tenbitworks.model.Asset;
 import org.tenbitworks.model.Member;
 import org.tenbitworks.model.TrainingTeacher;
 import org.tenbitworks.model.TrainingType;
@@ -62,8 +63,16 @@ public class TrainingTypeController {
 	@RequestMapping(value="/trainingtypes/{id}", method=RequestMethod.GET, produces={"application/json"})
 	@ResponseBody
 	@PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
-	public TrainingType getTrainingTypeJson(@PathVariable Long id, Model model, SecurityContextHolderAwareRequestWrapper security){
+	public TrainingType getTrainingTypeJson(@PathVariable Long id) {
 		return trainingTypeRepository.findOne(id);
+	}
+	
+	@RequestMapping(value="/trainingtypes/{id}/assets", method=RequestMethod.GET, produces={"application/json"})
+	@ResponseBody
+	@PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
+	public List<Asset> getAssetsForTrainingTypeJson(@PathVariable Long id) {
+		TrainingType tt = trainingTypeRepository.findOne(id);
+		return assetRepository.findAllByTrainingType(tt);
 	}
 
 	@RequestMapping(value = "/trainingtypes",method = RequestMethod.GET)
@@ -128,8 +137,7 @@ public class TrainingTypeController {
 	@PreAuthorize("hasRole('ADMIN')")
 	public String removeTeacherFromTrainingType(
 			@PathVariable Long id, 
-			@PathVariable UUID memberId,
-			SecurityContextHolderAwareRequestWrapper security) {
+			@PathVariable UUID memberId) {
 		
 		TrainingType tType = trainingTypeRepository.findOne(id);
 		
@@ -197,7 +205,10 @@ public class TrainingTypeController {
 		return new ResponseEntity<>(uuidsAdded, HttpStatus.CREATED);
 	}
 	
-	private boolean addOneTeacherToTraining(TrainingType trainingType, UUID memberId, String addedBy) {
+	private boolean addOneTeacherToTraining(
+			TrainingType trainingType, 
+			UUID memberId, 
+			String addedBy) {
 		
 		Member member = memberRepository.findOne(memberId);
 		if (member == null) {
