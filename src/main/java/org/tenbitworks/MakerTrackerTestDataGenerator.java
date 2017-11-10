@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,8 +21,10 @@ import org.tenbitworks.model.Member;
 import org.tenbitworks.model.MemberStatus;
 import org.tenbitworks.model.PaymentMethod;
 import org.tenbitworks.model.Roles;
+import org.tenbitworks.model.TrainingType;
 import org.tenbitworks.repositories.AssetRepository;
 import org.tenbitworks.repositories.MemberRepository;
+import org.tenbitworks.repositories.TrainingTypeRepository;
 import org.tenbitworks.repositories.UserRepository;
 
 @Configuration
@@ -48,11 +51,15 @@ public class MakerTrackerTestDataGenerator {
 	AssetRepository assetRepo;
 	
 	@Autowired
+	TrainingTypeRepository trainingTypeRepo;
+	
+	@Autowired
 	PasswordEncoder passwordEncoder;
 	
 	Random random = new Random();
 	
 	@Bean
+	@Order(1)
 	public CommandLineRunner generateTestUsers() {
 		return (args) -> {
 			if (generateTestData && userRepo.count() <= 2) { //2 for admin and user defaults
@@ -69,6 +76,7 @@ public class MakerTrackerTestDataGenerator {
 	}
 
 	@Bean
+	@Order(2)
 	public CommandLineRunner generateMemberData() {
 		return (args) -> {
 			if (generateTestData && memberRepo.count() == 0) {
@@ -99,6 +107,7 @@ public class MakerTrackerTestDataGenerator {
 	}
 
 	@Bean
+	@Order(3)
 	public CommandLineRunner generateAssetData() {
 		return (args) -> {
 			if (generateTestData && assetRepo.count() == 0) {
@@ -114,7 +123,6 @@ public class MakerTrackerTestDataGenerator {
 //					asset.setDateRemoved(dateRemoved);
 					asset.setDescription("asset description " + i);
 					asset.setDonor("donor " + i);
-//					asset.setMembers(members);
 					asset.setModelNumber("model number " + i);
 					asset.setOperator("Operator " + i);
 					asset.setRetailValue(new BigDecimal(random.nextInt(1000000)));
@@ -130,6 +138,29 @@ public class MakerTrackerTestDataGenerator {
 			
 			LOGGER.info("Assets found:");
 			assetRepo.findAll().forEach(asset -> LOGGER.info(asset.toString()));
+			LOGGER.info("-------------------------------");
+		};
+	}
+	
+	@Bean
+	@Order(4)
+	public CommandLineRunner generateTrainingData() {
+		return (args) -> {
+			if (generateTestData && trainingTypeRepo.count() == 0) {
+				LOGGER.info("Generating some TrainingTypes");
+				
+				for (int i = 0; i < testDataCount; i++) {
+					LOGGER.info("Adding Training Type " + i);
+					TrainingType tt = new TrainingType();
+					tt.setId(i);
+					tt.setName("TrainingType" + i);
+					tt.setDescription("Training Description " + i);
+					trainingTypeRepo.save(tt);
+				}
+			}
+			
+			LOGGER.info("TrainingTypes found:");
+			trainingTypeRepo.findAll().forEach(trainingType -> LOGGER.info(trainingType.toString()));
 			LOGGER.info("-------------------------------");
 		};
 	}
