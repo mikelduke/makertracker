@@ -179,7 +179,7 @@ public class MakerTrackerTestDataGenerator {
 				LOGGER.info("Generating some MemberTrainings");
 				
 				Iterator<Member> memberIt = memberRepo.findAll().iterator();
-				TrainingType trainingType = trainingTypeRepo.findAll().iterator().next();
+				TrainingType trainingType = trainingTypeRepo.findOne(1L);
 				org.tenbitworks.model.User user = userRepo.findOne("admin");
 
 				while (memberIt.hasNext()) {
@@ -191,6 +191,14 @@ public class MakerTrackerTestDataGenerator {
 					mt.setTrainingType(trainingType);
 					mt.setMember(member);
 					memberTrainingRepo.save(mt);
+				}
+				
+				Asset asset = assetRepo.findOneByTenbitId("tenBitId0"); 
+				if (asset != null) {
+					asset.setTrainingRequired(true);
+					asset.setTrainingType(trainingType);
+					asset.setAccessControlTimeMS(5000);
+					assetRepo.save(asset);
 				}
 			}
 			
