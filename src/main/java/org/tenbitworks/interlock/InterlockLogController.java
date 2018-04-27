@@ -41,7 +41,7 @@ public class InterlockLogController {
 	public String logList(Model model, SecurityContextHolderAwareRequestWrapper security, 
 			@RequestParam(name="page", defaultValue="0") int page,
 			@RequestParam(name="size", defaultValue="50") int size) {
-		PageRequest pageRequest = new PageRequest(page, size, new Sort(Direction.DESC, "logDate"));
+		PageRequest pageRequest = PageRequest.of(page, size, new Sort(Direction.DESC, "logDate"));
 		model.addAttribute("logs", logRepo.findAll(pageRequest));
 		model.addAttribute("count", logRepo.count());
 		model.addAttribute("page", page);

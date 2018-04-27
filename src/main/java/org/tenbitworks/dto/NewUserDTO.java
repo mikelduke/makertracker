@@ -3,9 +3,9 @@ package org.tenbitworks.dto;
 import java.util.List;
 import java.util.UUID;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
-import org.hibernate.validator.constraints.NotBlank;
 
 public class NewUserDTO {
 
