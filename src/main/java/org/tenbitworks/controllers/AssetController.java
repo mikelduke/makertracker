@@ -33,7 +33,7 @@ public class AssetController {
     @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
     public String getAsset(@PathVariable Long id, Model model){
         model.addAttribute("members",memberRepository.findAll());
-        model.addAttribute("asset", assetRepository.findOne(id));
+        model.addAttribute("asset", assetRepository.findById(id).get());
         model.addAttribute("assets", assetRepository.findAll());
         model.addAttribute("assetcount", assetRepository.count());
         model.addAttribute("trainingTypes", trainingTypeRepository.findAll());
@@ -44,7 +44,7 @@ public class AssetController {
     @ResponseBody
     @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
     public Asset getAssetJson(@PathVariable Long id){
-        return assetRepository.findOne(id);
+        return assetRepository.findById(id).get();
     }
     
     @RequestMapping(value="/assets", method=RequestMethod.GET, produces={"application/json"})
@@ -76,7 +76,7 @@ public class AssetController {
     @ResponseBody
     @Secured({"ROLE_ADMIN"})
     public String removeAsset(@PathVariable Long id){
-        assetRepository.delete(id);
+        assetRepository.deleteById(id);
         return id.toString();
     }
 }

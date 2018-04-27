@@ -47,7 +47,7 @@ public class MemberController {
 	@ResponseBody
 	@PreAuthorize("hasRole('ADMIN') or hasPermission(#id, 'Member', 'read')")
 	public Member getMemberJson(@PathVariable UUID id, Model model, SecurityContextHolderAwareRequestWrapper security) {
-		return memberRepository.findOne(id);
+		return memberRepository.findById(id).get();
 	}
 	
 //	@RequestMapping(value="/members/{id}/assets", method = RequestMethod.GET, produces = { "application/json" })
@@ -74,10 +74,10 @@ public class MemberController {
 		if (security.isUserInRole("ADMIN")) {
 			model.addAttribute("members", memberRepository.findAll(new Sort(Direction.ASC, "memberName")));
 		} else {
-			model.addAttribute("members", Arrays.asList(new Member[] { memberRepository.findOne(id) }));
+			model.addAttribute("members", Arrays.asList(new Member[] { memberRepository.findById(id).get() }));
 		}
 		
-		Member member = memberRepository.findOne(id);
+		Member member = memberRepository.findById(id).get();
 		model.addAttribute("member", member);
 		
 		return "members";
@@ -89,7 +89,7 @@ public class MemberController {
 		if (security.isUserInRole("ADMIN")) {
 			model.addAttribute("members", memberRepository.findAll(new Sort(Direction.ASC, "memberName")));
 		} else {
-			org.tenbitworks.model.User user = userRepository.findOne(security.getUserPrincipal().getName());
+			org.tenbitworks.model.User user = userRepository.findById(security.getUserPrincipal().getName()).get();
 			Member m = memberRepository.findOneByUser(user);
 			if (m != null) {
 				model.addAttribute("members", Arrays.asList(new Member[] { m }));
@@ -106,7 +106,7 @@ public class MemberController {
 	@PreAuthorize("hasRole('ADMIN')")
 	public UUID saveMember(@RequestBody Member member) {
 		if (member.getId() != null) {
-			Member oldMember = memberRepository.findOne(member.getId());
+			Member oldMember = memberRepository.findById(member.getId()).get();
 			member.setUser(oldMember.getUser());
 		}
 
@@ -118,7 +118,7 @@ public class MemberController {
 	@ResponseBody
 	@PreAuthorize("hasRole('ADMIN') or hasPermission(#id, 'Member', 'write')")
 	public ResponseEntity<String> updateMember(@PathVariable UUID id, @RequestBody @Valid UpdateMemberDTO updatedMember) {
-		Member member = memberRepository.findOne(id);
+		Member member = memberRepository.findById(id).get();
 
 		if (member == null) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -139,7 +139,7 @@ public class MemberController {
 	@ResponseBody
 	@PreAuthorize("hasRole('ADMIN')")
 	public String removeMember(@PathVariable UUID id){
-		memberRepository.delete(id);
+		memberRepository.deleteById(id);
 		return id.toString();
 	}
 	
@@ -149,7 +149,7 @@ public class MemberController {
 	public ResponseEntity<List<MemberTrainings>> getTrainingsForMember(
 			@PathVariable UUID id,
 			SecurityContextHolderAwareRequestWrapper security) {
-		Member member = memberRepository.findOne(id);
+		Member member = memberRepository.findById(id).get();
 
 		if (member == null) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);

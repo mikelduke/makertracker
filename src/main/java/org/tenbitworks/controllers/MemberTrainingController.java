@@ -45,7 +45,7 @@ public class MemberTrainingController {
 	public List<MemberTrainings> getMembersForTrainingType(
 			@PathVariable Long id,
 			SecurityContextHolderAwareRequestWrapper security) {
-		TrainingType trainingType = trainingTypeRepository.findOne(id);
+		TrainingType trainingType = trainingTypeRepository.findById(id).get();
 		List<MemberTrainings> trainings = memberTrainingRepository.findAllByTrainingType(trainingType);
 		
 		if (!security.isUserInRole("ADMIN")) {
@@ -65,8 +65,8 @@ public class MemberTrainingController {
 			@PathVariable Long id, 
 			@PathVariable UUID memberId,
 			SecurityContextHolderAwareRequestWrapper security) {
-		TrainingType trainingType = trainingTypeRepository.findOne(id);
-		Member member = memberRepository.findOne(memberId);
+		TrainingType trainingType = trainingTypeRepository.findById(id).get();
+		Member member = memberRepository.findById(memberId).get();
 		if (member == null) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
@@ -82,7 +82,7 @@ public class MemberTrainingController {
 				.member(member)
 				.trainingType(trainingType)
 				.trainingDate(Calendar.getInstance().getTime())
-				.addedBy(userRepository.findOne(security.getUserPrincipal().getName()))
+				.addedBy(userRepository.findById(security.getUserPrincipal().getName()).get())
 				.build();
 		memberTraining = memberTrainingRepository.save(memberTraining);
 		
@@ -96,7 +96,7 @@ public class MemberTrainingController {
 			@RequestBody List<UUID> memberIds,
 			SecurityContextHolderAwareRequestWrapper security) {
 		
-		TrainingType trainingType = trainingTypeRepository.findOne(id);
+		TrainingType trainingType = trainingTypeRepository.findById(id).get();
 
 		List<MemberTrainings> currentTrainings = memberTrainingRepository.findAllByTrainingType(trainingType);
 		List<UUID> existingIds = new ArrayList<>();
@@ -121,7 +121,7 @@ public class MemberTrainingController {
 	}
 	
 	private boolean addOneMemberToTraining(TrainingType trainingType, UUID memberId, String addedBy) {
-		Member member = memberRepository.findOne(memberId);
+		Member member = memberRepository.findById(memberId).get();
 		if (member == null) {
 			return false;
 		}
@@ -137,7 +137,7 @@ public class MemberTrainingController {
 				.member(member)
 				.trainingType(trainingType)
 				.trainingDate(Calendar.getInstance().getTime())
-				.addedBy(userRepository.findOne(addedBy))
+				.addedBy(userRepository.findById(addedBy).get())
 				.build();
 		memberTraining = memberTrainingRepository.save(memberTraining);
 		

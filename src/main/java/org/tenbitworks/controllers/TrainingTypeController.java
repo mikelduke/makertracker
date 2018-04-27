@@ -53,7 +53,7 @@ public class TrainingTypeController {
 	@RequestMapping(value="/trainingtypes/{id}", method=RequestMethod.GET)
 	@PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
 	public String getTrainingType(@PathVariable Long id, Model model){
-		model.addAttribute("trainingType", trainingTypeRepository.findOne(id));
+		model.addAttribute("trainingType", trainingTypeRepository.findById(id).get());
 		model.addAttribute("trainingTypes", trainingTypeRepository.findAll());
 		model.addAttribute("members", memberRepository.findAll());
 		
@@ -64,14 +64,14 @@ public class TrainingTypeController {
 	@ResponseBody
 	@PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
 	public TrainingType getTrainingTypeJson(@PathVariable Long id) {
-		return trainingTypeRepository.findOne(id);
+		return trainingTypeRepository.findById(id).get();
 	}
 	
 	@RequestMapping(value="/trainingtypes/{id}/assets", method=RequestMethod.GET, produces={"application/json"})
 	@ResponseBody
 	@PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
 	public List<Asset> getAssetsForTrainingTypeJson(@PathVariable Long id) {
-		TrainingType tt = trainingTypeRepository.findOne(id);
+		TrainingType tt = trainingTypeRepository.findById(id).get();
 		return assetRepository.findAllByTrainingType(tt);
 	}
 
@@ -96,10 +96,10 @@ public class TrainingTypeController {
 	@ResponseBody
 	@Secured({"ROLE_ADMIN"})
 	public String removeTrainingType(@PathVariable Long id){
-		TrainingType trainingType = trainingTypeRepository.findOne(id);
+		TrainingType trainingType = trainingTypeRepository.findById(id).get();
 		
 		memberTrainingRepository.findAllByTrainingType(trainingType).forEach(memberTrainingRepository::delete);
-		trainingTypeRepository.delete(id);
+		trainingTypeRepository.deleteById(id);
 		return id.toString();
 	}
 	
@@ -111,7 +111,7 @@ public class TrainingTypeController {
 			@PathVariable UUID memberId,
 			SecurityContextHolderAwareRequestWrapper security) {
 		
-		TrainingType tType = trainingTypeRepository.findOne(id);
+		TrainingType tType = trainingTypeRepository.findById(id).get();
 		
 		List<TrainingTeacher> teacherList = trainingTeacherRepository.findAllByTrainingType(tType);
 		for (TrainingTeacher teacher : teacherList) {
@@ -121,10 +121,10 @@ public class TrainingTypeController {
 		}
 			
 		TrainingTeacher tt = TrainingTeacher.builder()
-				.member(memberRepository.findOne(memberId))
+				.member(memberRepository.findById(memberId).get())
 				.trainingType(tType)
 				.addedDate(Calendar.getInstance().getTime())
-				.addedBy(userRepository.findOne(security.getUserPrincipal().getName()))
+				.addedBy(userRepository.findById(security.getUserPrincipal().getName()).get())
 				.build();
 		
 		tt = trainingTeacherRepository.save(tt);
@@ -139,7 +139,7 @@ public class TrainingTypeController {
 			@PathVariable Long id, 
 			@PathVariable UUID memberId) {
 		
-		TrainingType tType = trainingTypeRepository.findOne(id);
+		TrainingType tType = trainingTypeRepository.findById(id).get();
 		
 		List<TrainingTeacher> teacherList = trainingTeacherRepository.findAllByTrainingType(tType);
 		for (TrainingTeacher teacher : teacherList) {
@@ -160,7 +160,7 @@ public class TrainingTypeController {
 			@PathVariable Long id, 
 			SecurityContextHolderAwareRequestWrapper security) {
 		
-		TrainingType tType = trainingTypeRepository.findOne(id);
+		TrainingType tType = trainingTypeRepository.findById(id).get();
 
 		List<TrainingTeacher> teacherList = trainingTeacherRepository.findAllByTrainingType(tType);
 		
@@ -181,7 +181,7 @@ public class TrainingTypeController {
 			@RequestBody List<UUID> memberIds,
 			SecurityContextHolderAwareRequestWrapper security) {
 		
-		TrainingType trainingType = trainingTypeRepository.findOne(id);
+		TrainingType trainingType = trainingTypeRepository.findById(id).get();
 
 		List<TrainingTeacher> currentTrainings = trainingTeacherRepository.findAllByTrainingType(trainingType);
 		List<UUID> existingIds = new ArrayList<>();
@@ -210,7 +210,7 @@ public class TrainingTypeController {
 			UUID memberId, 
 			String addedBy) {
 		
-		Member member = memberRepository.findOne(memberId);
+		Member member = memberRepository.findById(memberId).get();
 		if (member == null) {
 			return false;
 		}
@@ -226,7 +226,7 @@ public class TrainingTypeController {
 				.member(member)
 				.trainingType(trainingType)
 				.addedDate(Calendar.getInstance().getTime())
-				.addedBy(userRepository.findOne(addedBy))
+				.addedBy(userRepository.findById(addedBy).get())
 				.build();
 		trainingTeacher = trainingTeacherRepository.save(trainingTeacher);
 

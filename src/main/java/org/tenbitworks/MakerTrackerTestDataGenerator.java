@@ -101,7 +101,7 @@ public class MakerTrackerTestDataGenerator {
 					newMember.setRfid("rfid-badge-" + i);
 					newMember.setStatus(MemberStatus.MEMBER);
 					newMember.setZipCode("12345");
-					newMember.setUser(userRepo.findOne("user" + i));
+					newMember.setUser(userRepo.findById("user" + i).get());
 					
 					memberRepo.save(newMember);
 				}
@@ -179,8 +179,8 @@ public class MakerTrackerTestDataGenerator {
 				LOGGER.info("Generating some MemberTrainings");
 				
 				Iterator<Member> memberIt = memberRepo.findAll().iterator();
-				TrainingType trainingType = trainingTypeRepo.findOne(1L);
-				org.tenbitworks.model.User user = userRepo.findOne("admin");
+				TrainingType trainingType = trainingTypeRepo.findById(1L).get();
+				org.tenbitworks.model.User user = userRepo.findById("admin").get();
 
 				while (memberIt.hasNext()) {
 					Member member = memberIt.next();

@@ -37,7 +37,7 @@ public class CustomPermissionEvaluator implements PermissionEvaluator {
 		}
 		
 		if (targetId instanceof UUID && targetType.equalsIgnoreCase("Member")) {
-			Member member = memberRepository.findOne((UUID) targetId);
+			Member member = memberRepository.findById((UUID) targetId).get();
 			if (member != null && member.getUser() != null) {
 				return member.getUser().getUsername().equals(authentication.getName());
 			}

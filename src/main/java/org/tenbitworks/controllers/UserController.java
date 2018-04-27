@@ -100,7 +100,7 @@ public class UserController {
 			});
 		}
 		
-		org.tenbitworks.model.User user = userRepository.findOne(username);
+		org.tenbitworks.model.User user = userRepository.findById(username).get();
 		UserDTO userDTO = new UserDTO(user, authoritiesList);
 		
 		Member member = memberRepository.findOneByUser(user);
@@ -119,7 +119,7 @@ public class UserController {
 		if (!userDetailsManager.userExists(newUser.getUsername())) {
 			Member member = null;
 			if (newUser.getMemberId() != null) {
-				member = memberRepository.findOne(newUser.getMemberId());
+				member = memberRepository.findById(newUser.getMemberId()).get();
 				if (member.getUser() != null) {
 					return new ResponseEntity<String>("Invalid Member selection", HttpStatus.BAD_REQUEST);
 				}
@@ -142,7 +142,7 @@ public class UserController {
 			userDetailsManager.createUser(new User(newUser.getUsername(), passwordEncoder.encode(newUser.getPlainPassword()), getAuthorities(validRoles)));
 			
 			if (member != null) {
-				org.tenbitworks.model.User newUserInRepo = userRepository.findOne(newUser.getUsername());
+				org.tenbitworks.model.User newUserInRepo = userRepository.findById(newUser.getUsername()).get();
 				member.setUser(newUserInRepo);
 				memberRepository.save(member);
 			}
@@ -166,7 +166,7 @@ public class UserController {
     @Secured({"ROLE_ADMIN"})
     public String deleteUser(@PathVariable String username) {
 		if (userDetailsManager.userExists(username)) {
-			org.tenbitworks.model.User user = userRepository.findOne(username);
+			org.tenbitworks.model.User user = userRepository.findById(username).get();
 			Member m = memberRepository.findOneByUser(user);
 			
 			if (m != null) {
@@ -184,7 +184,7 @@ public class UserController {
 	@ResponseBody
 	@PreAuthorize("hasRole('ROLE_ADMIN')") //should current user be able to reset their own pass, or maybe just a forgot pass function for this?
 	public ResponseEntity<String> resetPasswordForUser(@PathVariable String username, SecurityContextHolderAwareRequestWrapper security) {
-		org.tenbitworks.model.User user = userRepository.findOne(username);
+		org.tenbitworks.model.User user = userRepository.findById(username).get();
 		
 		String newPasswordPlain = UUID.randomUUID().toString();
 		String newPassword = passwordEncoder.encode(newPasswordPlain);
@@ -201,7 +201,7 @@ public class UserController {
 	@ResponseBody
 	@PreAuthorize("hasRole('ROLE_ADMIN') or #username == authentication.name")
 	public ResponseEntity<String> changePassword(@PathVariable String username, @RequestBody @Valid ChangePasswordDTO passwordDTO, SecurityContextHolderAwareRequestWrapper security) {
-		org.tenbitworks.model.User user = userRepository.findOne(username);
+		org.tenbitworks.model.User user = userRepository.findById(username).get();
 		
 		boolean passwordChanged = false;
 		if (security.isUserInRole("ADMIN")) {

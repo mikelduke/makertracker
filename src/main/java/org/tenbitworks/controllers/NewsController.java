@@ -47,7 +47,7 @@ public class NewsController {
 	@ResponseBody
 	@Secured("ROLE_ADMIN")
 	public Long postNews(@RequestBody News newsItem, SecurityContextHolderAwareRequestWrapper security) {
-		newsItem.setUser(userRepository.findOne(security.getRemoteUser()));
+		newsItem.setUser(userRepository.findById(security.getRemoteUser()).get());
 		newsItem.setCreatedAt(Calendar.getInstance().getTime());
 		
 		newsRepository.save(newsItem);
@@ -61,7 +61,7 @@ public class NewsController {
 	@ResponseBody
 	@Secured("ROLE_ADMIN")
 	public String deleteNews(@PathVariable Long id){
-		newsRepository.delete(id);
+		newsRepository.deleteById(id);
 		return id.toString();
 	}
 
@@ -69,13 +69,13 @@ public class NewsController {
 	@ResponseBody
 	@Secured({"ROLE_USER", "ROLE_ADMIN"})
 	public News getSingleNewsJson(@PathVariable Long id, Model model) {
-		return newsRepository.findOne(id);
+		return newsRepository.findById(id).get();
 	}
 	
 	@RequestMapping(value = "/news/{id}", method = RequestMethod.GET)
 	@Secured({"ROLE_USER", "ROLE_ADMIN"})
 	public String getSingleNewsPage(@PathVariable Long id, Model model) {
-		model.addAttribute("news", Arrays.asList(newsRepository.findOne(id)));
+		model.addAttribute("news", Arrays.asList(newsRepository.findById(id).get()));
 
 		return "news";
 	}
